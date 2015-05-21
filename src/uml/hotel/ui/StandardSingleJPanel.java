@@ -1,10 +1,13 @@
 package uml.hotel.ui;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import java.awt.GridLayout;
+import java.awt.Point;
 
 import javax.swing.JButton;
 
@@ -24,13 +27,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.util.List;
 
 public class StandardSingleJPanel extends JPanel implements Observer, ActionListener {
 	
 	private JButton[] buttons;
 	private JPopupMenu menu;
+	//单击查看状态时选中的按钮
 	private JButton selectedBtn;
+	
+	//换房时拖拽的按钮
+	private JButton draggedButton;
+	private Point startPoint;
 
 	/**
 	 * Create the panel.
@@ -70,13 +80,16 @@ public class StandardSingleJPanel extends JPanel implements Observer, ActionList
 		for (final JButton button : buttons) {
 			button.addActionListener(this);
 			button.addMouseListener(new MouseAdapter() {
+				
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2) {
-						RoomStatusDAO dao = new RoomStatusDAO();
-						List list = dao.findByRoomId(button.getText());
-						if (list != null && list.size() > 0) {
+						RoomDAO roomDAO = new RoomDAO();
+						Room room = (Room)roomDAO.findByNumber(button.getText()).get(0);
+						if (room.getStatus() == Room.kRoomStatusUsed) {
 							//如果当前房间有记录
+							RoomStatusDAO statusDAO = new RoomStatusDAO();
+							List<RoomStatus> list = statusDAO.findByRoomId(button.getText());
 							RoomStatus status = (RoomStatus)list.get(list.size() - 1);
 							UserDAO userDAO = new UserDAO();
 							User user = userDAO.findById(status.getUserId());
@@ -101,28 +114,111 @@ public class StandardSingleJPanel extends JPanel implements Observer, ActionList
 							menu.getComponent(2).setEnabled(true);
 							menu.getComponent(3).setEnabled(true);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(false);
 						} else if (room.getStatus() == Room.kRoomStatusReserved) {
 							menu.getComponent(0).setEnabled(false);
 							menu.getComponent(1).setEnabled(false);
 							menu.getComponent(2).setEnabled(true);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(false);
 						} else if (room.getStatus() == Room.kRoomStatusUsed) {
 							menu.getComponent(0).setEnabled(true);
 							menu.getComponent(1).setEnabled(true);
 							menu.getComponent(2).setEnabled(false);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(true);
 						} else if (room.getStatus() == Room.kRoomStatusClean) {
 							menu.getComponent(0).setEnabled(false);
 							menu.getComponent(1).setEnabled(false);
 							menu.getComponent(2).setEnabled(false);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(true);
+							menu.getComponent(5).setEnabled(false);
+						}
+					} else {
+						//如果不是右键单击
+						//复制选中按钮的一切属性
+						JButton btn = (JButton)ev.getComponent();
+						draggedButton = new JButton();
+						draggedButton.setText(btn.getText());
+						draggedButton.setBounds(btn.getBounds());
+						draggedButton.setIcon(btn.getIcon());
+						btn.getParent().add(draggedButton);
+						
+						//记录起点
+						startPoint = SwingUtilities.convertPoint(draggedButton, ev.getPoint(), draggedButton.getParent());
+					}
+					 
+				 }	// mousePressed
+				
+				@Override
+				public void mouseReleased(MouseEvent ev) {
+					
+					//判断是否落在另一个房间上，并且不是已经选中的房间
+					for (JButton btn : buttons) {
+						if (!btn.getText().equals(draggedButton.getText()) && btn.getBounds().intersects(draggedButton.getBounds())) {
+							//换房
+							System.out.println("换房 from " + draggedButton.getText() + "to " + btn.getText());
+							RoomDAO roomDAO = new RoomDAO();
+							Room target = (Room)roomDAO.findByNumber(btn.getText()).get(0);
+							Room source = (Room)roomDAO.findByNumber(draggedButton.getText()).get(0);
+						
+							//只有已用的房间可以使用换房间功能
+							if (source.getStatus() == Room.kRoomStatusUsed) {
+								if (target.getStatus() != Room.kRoomStatusAvaliable) {
+									JOptionPane.showMessageDialog(null, "目前房间处于不可供状态，调换失败");
+								} else {
+									int result = JOptionPane.showConfirmDialog(null, "确认要换房吗?");
+									if (result == JOptionPane.OK_OPTION) {
+										target.setStatus(source.getStatus());
+										source.setStatus(Room.kRoomStatusAvaliable);
+										
+										//创建新的房间状态信息
+										RoomStatusDAO statusDAO = new RoomStatusDAO();
+										List<RoomStatus> list = statusDAO.findByRoomId(source.getNumber());
+										RoomStatus sourceStatus = list.get(list.size() - 1);
+										RoomStatus targetStatus = new RoomStatus(sourceStatus.getUserId(), 
+												sourceStatus.getStartTime(), sourceStatus.getEndTime(), 
+												target.getNumber(), sourceStatus.getDeposit(), 
+												sourceStatus.getTime(), sourceStatus.getLongStay(), 
+												sourceStatus.getType());
+										statusDAO.save(targetStatus);
+										
+										//更新房间状态
+										roomDAO.attachDirty(source);
+										roomDAO.attachDirty(target);
+										//发送通知：房间状态改变
+										NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, source.getNumber());
+										NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, target.getNumber());
+									}
+									
+								}
+							}
+							
+							break;
 						}
 					}
-				 }
+					
+					
+					draggedButton.getParent().remove(draggedButton);
+					repaint();
+				}
+				
 			});
+			
+			
+			button.addMouseMotionListener(new MouseMotionAdapter() {
+				
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					draggedButton.setLocation(e.getX() + startPoint.x - draggedButton.getWidth(), e.getY() + startPoint.y - draggedButton.getHeight());
+					repaint();
+				}
+			});
+			
+			
 		}
 		
 		//监听房间状态改变的通知
@@ -231,6 +327,16 @@ public class StandardSingleJPanel extends JPanel implements Observer, ActionList
 			}
 		});
 		menu.add(item4);
+		
+		final JMenuItem item5 = new JMenuItem("更换房间");
+		item5.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		menu.add(item5);
 	}
 
 }

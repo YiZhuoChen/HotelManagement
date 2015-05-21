@@ -88,24 +88,28 @@ public class LuxurySingleJPanel extends JPanel implements Observer, ActionListen
 							menu.getComponent(2).setEnabled(true);
 							menu.getComponent(3).setEnabled(true);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(false);
 						} else if (room.getStatus() == Room.kRoomStatusReserved) {
 							menu.getComponent(0).setEnabled(false);
 							menu.getComponent(1).setEnabled(false);
 							menu.getComponent(2).setEnabled(true);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(false);
 						} else if (room.getStatus() == Room.kRoomStatusUsed) {
 							menu.getComponent(0).setEnabled(true);
 							menu.getComponent(1).setEnabled(true);
 							menu.getComponent(2).setEnabled(false);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(false);
+							menu.getComponent(5).setEnabled(true);
 						} else if (room.getStatus() == Room.kRoomStatusClean) {
 							menu.getComponent(0).setEnabled(false);
 							menu.getComponent(1).setEnabled(false);
 							menu.getComponent(2).setEnabled(false);
 							menu.getComponent(3).setEnabled(false);
 							menu.getComponent(4).setEnabled(true);
+							menu.getComponent(5).setEnabled(false);
 						}
 					}
 				 }
@@ -212,6 +216,16 @@ public class LuxurySingleJPanel extends JPanel implements Observer, ActionListen
 			}
 		});
 		menu.add(item4);
+		
+		final JMenuItem item5 = new JMenuItem("¸ü»»·¿¼ä");
+		item5.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		menu.add(item5);
 	}
 
 }
