@@ -223,7 +223,7 @@ public class ReservationFrame extends JFrame implements Observer {
 		scrollPane.setViewportView(table);
 		
 		String[] columnNames = {"预定单号", "预定状态", "房间类型", "房间编号", "宾客姓名", "公司名称", "联系电话", "宾客来源", "预定时间", "预抵时间"};
-		int[] columnWidth = {60, 60, 60, 60, 80, 100, 80, 60, 180, 180};
+		int[] columnWidth = {60, 60, 120, 60, 80, 100, 80, 60, 180, 180};
 		tableModel.setColumnNames(columnNames);
 		for (int i = 0; i < columnWidth.length; i++) {
 			TableColumn column = table.getColumnModel().getColumn(i);
@@ -231,6 +231,8 @@ public class ReservationFrame extends JFrame implements Observer {
 		}
 		
 		updateTableData();
+		
+		NotificationCenter.addNotification(this, NotificationCenter.kReservationStateDidChangeNotification);
 	}
 	
 	public void updateTableData() {

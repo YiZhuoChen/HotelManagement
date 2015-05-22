@@ -192,8 +192,8 @@ public class MainFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				// TODO 客户换房
+				new ChangeRoomFrame().setVisible(true);
 			}
 		});
 		
@@ -207,6 +207,13 @@ public class MainFrame extends JFrame {
 		button_6.setBounds(242, 10, 48, 48);
 		Utils.createToolBarItem(button_6, "pic/ToolBar/m06.gif");
 		panel.add(button_6);
+		button_6.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//增加消费
+			}
+		});
 		
 		JLabel label_4 = new JLabel("增加消费");
 		label_4.setBounds(242, 58, 54, 15);

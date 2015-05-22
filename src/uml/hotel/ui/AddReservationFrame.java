@@ -20,6 +20,9 @@ import uml.hotel.dao.RoomDAO;
 import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.notification.NotificationCenter;
+import uml.hotel.utils.CalendarFrame;
+import uml.hotel.utils.CalendarFrameDelegate;
+import uml.hotel.utils.PCalendar;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -30,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-public class AddReservationFrame extends JFrame {
+public class AddReservationFrame extends JFrame implements CalendarFrameDelegate {
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -39,7 +42,8 @@ public class AddReservationFrame extends JFrame {
 	private JTextField textField_5;
 
 	private List<Room> selectedTypeRooms;
-	private JComboBox roomTypeBox;
+	private JComboBox roomNumBox;
+	private CalendarFrame calendarFrame;
 	
 	/**
 	 * Launch the application.
@@ -119,8 +123,23 @@ public class AddReservationFrame extends JFrame {
 		
 		textField_5 = new JTextField();
 		textField_5.setColumns(10);
-		textField_5.setBounds(119, 379, 270, 21);
+		textField_5.setBounds(119, 379, 220, 21);
 		contentPane.add(textField_5);
+		
+		JButton addDateButton = new JButton("添加日期");
+		addDateButton.setBounds(340, 375, 100, 30);
+		contentPane.add(addDateButton);
+		addDateButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				calendarFrame = new CalendarFrame(new PCalendar());
+				calendarFrame.setDelegate(AddReservationFrame.this);
+				calendarFrame.setVisible(true);
+				calendarFrame.showCalendar();
+			}
+		});
 		
 		JLabel lblNewLabel = new JLabel("\u5BBE\u5BA2\u9884\u5B9A\u767B\u8BB0");
 		lblNewLabel.setForeground(Color.BLUE);
@@ -152,13 +171,13 @@ public class AddReservationFrame extends JFrame {
 					//将所选类型的房间名字添加进数组中。
 					roomNums.add(room.getNumber());
 				}
-				roomTypeBox.setModel(new DefaultComboBoxModel(roomNums));
+				roomNumBox.setModel(new DefaultComboBoxModel(roomNums));
 			}
 		});
 		
-		roomTypeBox = new JComboBox();
-		roomTypeBox.setBounds(119, 329, 270, 21);
-		contentPane.add(roomTypeBox);
+		roomNumBox = new JComboBox();
+		roomNumBox.setBounds(119, 329, 270, 21);
+		contentPane.add(roomNumBox);
 		
 		JButton button = new JButton("\u6DFB\u52A0\u9884\u5B9A");
 		button.setBounds(93, 428, 93, 23);
@@ -169,7 +188,7 @@ public class AddReservationFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				String roomNum = (String) roomTypeBox.getSelectedItem();
+				String roomNum = (String) roomNumBox.getSelectedItem();
 				
 				List<Room> roomList = roomDAO.findByNumber(roomNum);
 				Room selectedRoom = (Room)roomList.get(roomList.size() - 1);
@@ -185,7 +204,7 @@ public class AddReservationFrame extends JFrame {
 				String company = textField_2.getText();
 				int from = comboBox.getSelectedIndex();
 				String arriveTime = textField_5.getText();
-				int type = roomTypeBox.getSelectedIndex() + 2;
+				int type = typeBox.getSelectedIndex() + 2;
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:ss:mm");
 				String now = df.format(new Date());
 				
@@ -215,5 +234,16 @@ public class AddReservationFrame extends JFrame {
 		});
 		button_1.setBounds(296, 428, 93, 23);
 		contentPane.add(button_1);
+	}
+
+	@Override
+	public void calendarDidSelectWithDayName(String day) {
+//		System.out.println(day);
+		
+		String defaultDateString = day + " 19:00:00";
+		textField_5.setText(defaultDateString);
+		if (calendarFrame != null) {
+			calendarFrame.setVisible(false);
+		}
 	}
 }

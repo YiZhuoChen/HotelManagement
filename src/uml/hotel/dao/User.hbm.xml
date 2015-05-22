@@ -35,8 +35,8 @@
                 <comment>0-普通 1-VIP</comment>
             </column>
         </property>
-        <property name="from" type="java.lang.Integer">
-            <column name="from" not-null="true">
+        <property name="userFrom" type="java.lang.Integer">
+            <column name="user_from" not-null="true">
                 <comment>宾客来源 0普通宾客1网站2旅行社3其他</comment>
             </column>
         </property>

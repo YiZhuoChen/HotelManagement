@@ -15,9 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import uml.hotel.dao.CostDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
 import uml.hotel.dao.UserDAO;
+import uml.hotel.model.Cost;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
 import uml.hotel.model.User;
@@ -120,7 +122,7 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+				new ChangeRoomFrame((selectedBtn.getText())).setVisible(true);
 			}
 		});
 		menu.add(item5);
@@ -214,6 +216,10 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 				
 				@Override
 				public void mouseReleased(MouseEvent ev) {
+					//忽略右键单击
+					if (draggedButton == null) {
+						return;
+					}
 					
 					//判断是否落在另一个房间上，并且不是已经选中的房间
 					for (JButton btn : buttons) {
@@ -245,6 +251,13 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 												sourceStatus.getType());
 										statusDAO.save(targetStatus);
 										
+										//创建新的消费信息
+										CostDAO costDAO = new CostDAO();
+										List<Cost> costList = costDAO.findByRoomId(source.getId());
+										Cost cost = costList.get(costList.size() - 1);
+										Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getServerItemId(), cost.getDiscount());
+										costDAO.save(newCost);
+										
 										//更新房间状态
 										roomDAO.attachDirty(source);
 										roomDAO.attachDirty(target);
@@ -260,8 +273,9 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 						}
 					}
 					
-					
-					draggedButton.getParent().remove(draggedButton);
+					if (draggedButton != null && draggedButton.getParent() != null) {
+						draggedButton.getParent().remove(draggedButton);	
+					}
 					repaint();
 				}
 				

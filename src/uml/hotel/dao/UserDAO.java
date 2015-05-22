@@ -30,7 +30,7 @@ public class UserDAO extends BaseHibernateDAO {
 	public static final String ID_CARD = "idCard";
 	public static final String GENDER = "gender";
 	public static final String TYPE = "type";
-	public static final String FROM = "from";
+	public static final String USERFROM = "userFrom";
 	public static final String LOCATION = "location";
 	public static final String COMPANY = "company";
 	public static final String OTHER = "other";
@@ -121,8 +121,8 @@ public class UserDAO extends BaseHibernateDAO {
 		return findByProperty(TYPE, type);
 	}
 
-	public List findByFrom(Object from) {
-		return findByProperty(FROM, from);
+	public List findByUserFrom(Object from) {
+		return findByProperty(USERFROM, from);
 	}
 
 	public List findByLocation(Object location) {

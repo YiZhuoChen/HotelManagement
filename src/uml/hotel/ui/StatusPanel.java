@@ -203,7 +203,7 @@ public class StatusPanel extends JPanel implements Observer {
 			
 			RoomStatusDAO statusDAO = new RoomStatusDAO();
 			List list = statusDAO.findByRoomId(room.getNumber());
-			if (list != null && list.size() > 0) {
+			if ((list != null && list.size() > 0) && room.getStatus() == Room.kRoomStatusUsed) {
 				RoomStatus status = (RoomStatus)list.get(list.size() - 1);
 				enterTimeLabel.setText(status.getStartTime());
 				exitTimeLabel.setText(status.getEndTime());

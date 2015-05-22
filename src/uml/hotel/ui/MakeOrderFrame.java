@@ -71,7 +71,7 @@ public class MakeOrderFrame extends JFrame {
 		JLabel lblBd = new JLabel(text);
 		lblBd.setForeground(Color.RED);
 		lblBd.setFont(new Font("ËÎÌו", Font.PLAIN, 14));
-		lblBd.setBounds(82, 10, 54, 25);
+		lblBd.setBounds(82, 10, 70, 25);
 		panel.add(lblBd);
 		
 		JLabel label_1 = new JLabel("\u623F\u95F4\u7C7B\u578B\uFF1A");

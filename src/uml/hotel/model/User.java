@@ -14,7 +14,7 @@ public class User implements java.io.Serializable {
 	private String idCard;
 	private Integer gender;
 	private Integer type;
-	private Integer from;
+	private Integer userFrom;
 	private String location;
 	private String company;
 	private String other;
@@ -36,14 +36,14 @@ public class User implements java.io.Serializable {
 
 	/** full constructor */
 	public User(String name, String phoneNum, String idCard, Integer gender,
-			Integer type, Integer from, String location, String company,
+			Integer type, Integer userFrom, String location, String company,
 			String other) {
 		this.name = name;
 		this.phoneNum = phoneNum;
 		this.idCard = idCard;
 		this.gender = gender;
 		this.type = type;
-		this.from = from;
+		this.userFrom = userFrom;
 		this.location = location;
 		this.company = company;
 		this.other = other;
@@ -99,12 +99,12 @@ public class User implements java.io.Serializable {
 		this.type = type;
 	}
 
-	public Integer getFrom() {
-		return this.from;
+	public Integer getUserFrom() {
+		return this.userFrom;
 	}
 
-	public void setFrom(Integer from) {
-		this.from = from;
+	public void setUserFrom(Integer userFrom) {
+		this.userFrom = userFrom;
 	}
 
 	public String getLocation() {
@@ -129,6 +129,11 @@ public class User implements java.io.Serializable {
 
 	public void setOther(String other) {
 		this.other = other;
+	}
+	
+	public String toString() {
+		return this.name + this.company + this.idCard + this.location + this.phoneNum;
+		
 	}
 
 }

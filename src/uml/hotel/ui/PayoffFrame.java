@@ -237,6 +237,8 @@ public class PayoffFrame extends JFrame {
 				setVisible(false);
 			}
 		});
+		
+		
 		button_1.setBounds(350, 305, 93, 23);
 		panel_1.add(button_1);
 		

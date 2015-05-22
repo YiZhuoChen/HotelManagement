@@ -15,8 +15,10 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
+import uml.hotel.dao.CostDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
+import uml.hotel.model.Cost;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
 import uml.hotel.notification.NotificationCenter;
@@ -136,18 +138,25 @@ public class ChangeRoomFrame extends JFrame implements ActionListener {
 			});
 		}
 	}
+	
+	public ChangeRoomFrame(String source) {
+		this();
+		comboBox.setSelectedItem(source);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (comboBox.getSelectedItem() == null || comboBox_1.getSelectedItem() == null) {
-			
+			return;
 		}
 		
 		int result = JOptionPane.showConfirmDialog(null, "确认要换房吗?");
 		if (result == JOptionPane.OK_OPTION) {
+			setVisible(false);
+			
 			RoomDAO roomDAO = new RoomDAO();
-			Room target = (Room)roomDAO.findByNumber((String)comboBox.getSelectedItem()).get(0);
-			Room source = (Room)roomDAO.findByNumber((String)comboBox_1.getSelectedItem()).get(0);
+			Room source = (Room)roomDAO.findByNumber((String)comboBox.getSelectedItem()).get(0);
+			Room target = (Room)roomDAO.findByNumber((String)comboBox_1.getSelectedItem()).get(0);
 			
 			target.setStatus(source.getStatus());
 			source.setStatus(Room.kRoomStatusAvaliable);
@@ -162,6 +171,13 @@ public class ChangeRoomFrame extends JFrame implements ActionListener {
 					sourceStatus.getTime(), sourceStatus.getLongStay(), 
 					sourceStatus.getType());
 			statusDAO.save(targetStatus);
+			
+			//创建新的消费信息
+			CostDAO costDAO = new CostDAO();
+			List<Cost> costList = costDAO.findByRoomId(source.getId());
+			Cost cost = costList.get(costList.size() - 1);
+			Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getServerItemId(), cost.getDiscount());
+			costDAO.save(newCost);
 			
 			//更新房间状态
 			roomDAO.attachDirty(source);
