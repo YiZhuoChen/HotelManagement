@@ -242,6 +242,12 @@ public class ReservationFrame extends JFrame implements Observer {
 		Vector<Vector<Object>> data = new Vector<Vector<Object>>();
 		for (int i = 0; i < orders.size(); i++) {
 			Order order = orders.get(i);
+			
+			//如果不是正在预定的订单，则忽略
+			if (order.getState() != Order.kOrderTypeOrdering) {
+				continue;
+			}
+			
 			Vector<Object> row = new Vector<Object>();
 			//预定单号
 			row.add(order.getId());

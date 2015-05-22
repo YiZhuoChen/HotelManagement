@@ -204,6 +204,8 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 						JButton btn = (JButton)ev.getComponent();
 						draggedButton = new JButton();
 						draggedButton.setText(btn.getText());
+						draggedButton.setVerticalTextPosition(SwingUtilities.BOTTOM);
+						draggedButton.setHorizontalTextPosition(SwingUtilities.CENTER);
 						draggedButton.setBounds(btn.getBounds());
 						draggedButton.setIcon(btn.getIcon());
 						btn.getParent().add(draggedButton);

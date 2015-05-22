@@ -168,6 +168,7 @@ public class OrderDAO extends BaseHibernateDAO {
 
 	public void attachDirty(Order instance) {
 		log.debug("attaching dirty Order instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().saveOrUpdate(instance);
 			log.debug("attach successful");
@@ -175,6 +176,9 @@ public class OrderDAO extends BaseHibernateDAO {
 			log.error("attach failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public void attachClean(Order instance) {

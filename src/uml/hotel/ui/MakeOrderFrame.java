@@ -13,10 +13,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 
 import uml.hotel.dao.CostDAO;
+import uml.hotel.dao.OrderDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
 import uml.hotel.dao.UserDAO;
 import uml.hotel.model.Cost;
+import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
 import uml.hotel.model.User;
@@ -150,6 +152,12 @@ public class MakeOrderFrame extends JFrame {
 				CostDAO costDAO = new CostDAO();
 				Cost cost = new Cost(room.getId(), (float)(room.getCost() * roomStatus.getLivingDay()), 0);
 				costDAO.save(cost);
+				
+				//根据roomNum找到相应的订单（如果有），设置为完成状态
+				OrderDAO orderDAO = new OrderDAO();
+				Order order = (Order)orderDAO.findByRoomNum(text).get(0);
+				order.setState(Order.kOrderTypeFinished);
+				orderDAO.attachDirty(order);
 				
 				setVisible(false);
 				
