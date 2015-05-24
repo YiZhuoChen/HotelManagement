@@ -49,6 +49,7 @@ public class ConsumeFrame extends JFrame {
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTable rightTable;
+	private JTable leftTable;
 	
 	private static int consumeNumber = 1;	//记录当前订单编号
 	
@@ -57,6 +58,7 @@ public class ConsumeFrame extends JFrame {
 	private JLabel roomNumberLabel;		//房间编号
 	private JLabel customerNameLabel;	//宾客姓名
 
+	private Vector<Vector<Object>> leftTableData;
 	private Vector<Vector<Object>> rightTableData;
 	
 	private RoomStatus status;
@@ -81,7 +83,6 @@ public class ConsumeFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public ConsumeFrame() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 600, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -124,6 +125,43 @@ public class ConsumeFrame extends JFrame {
 		JButton button = new JButton("添加消费项目");
 		button.setBounds(207, 83, 128, 23);
 		panel.add(button);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//输入检验
+				if (textField.getText() == null || textField_1.getText() == null || textField_2.getText() == null) {
+					return;
+				}
+				
+				String content = textField.getText();
+				try {
+					float cost = Float.parseFloat(textField_1.getText());
+					int count = Integer.parseInt(textField_2.getText());
+					
+					//添加到右表中表示顾客选中这些消费项
+					Vector<Object> row = new Vector<Object>();
+					row.add(content);
+					row.add(cost);
+					row.add(count);
+					rightTableData.add(row);
+					//更新数据源
+					((CustomTableModel)(rightTable.getModel())).setData(rightTableData);
+					
+					//添加到左表中表示以后这些消费项可复用
+					ServerItem item = new ServerItem(content, cost);
+					ServerItemDAO dao = new ServerItemDAO();
+					dao.save(item);
+					
+					updateLeftTableModel();
+					//更新数据源
+					((CustomTableModel)(leftTable.getModel())).setData(leftTableData);
+				} catch (NumberFormatException e) {
+					// TODO: handle exception
+				}
+				
+			}
+		});
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "订单基本信息", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -165,20 +203,13 @@ public class ConsumeFrame extends JFrame {
 		String[] rightColumnNames = {"消费名称", "单价", "数量"};
 		
 		//初始化左侧列表的数据
-		Vector<Vector<Object>> defaultData = new Vector<Vector<Object>>();
-		ServerItemDAO itemDAO = new ServerItemDAO();
-		List<ServerItem> items = itemDAO.findAll();
-		for (ServerItem serverItem : items) {
-			Vector<Object> row = new Vector<Object>();
-			row.add(serverItem.getContent());
-			row.add(serverItem.getCost());
-			defaultData.add(row);
-		}
+		leftTableData = new Vector<Vector<Object>>();
+		updateLeftTableModel();
 		
 		CustomTableModel leftTableModel = new CustomTableModel();
 		leftTableModel.setColumnNames(leftColumnNames);
-		leftTableModel.setData(defaultData);
-		final JTable leftTable = new JTable(leftTableModel);
+		leftTableModel.setData(leftTableData);
+		leftTable = new JTable(leftTableModel);
 		//单选
 		leftTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		leftTable.getTableHeader().setDefaultRenderer(new HeaderRenderer(leftTable));
@@ -354,4 +385,19 @@ public class ConsumeFrame extends JFrame {
 		//更新数据源
 		((CustomTableModel)(rightTable.getModel())).setData(rightTableData);
 	}
+	
+	
+	public void updateLeftTableModel() {
+		ServerItemDAO itemDAO = new ServerItemDAO();
+		List<ServerItem> items = itemDAO.findAll();
+		for (ServerItem serverItem : items) {
+			Vector<Object> row = new Vector<Object>();
+			row.add(serverItem.getContent());
+			row.add(serverItem.getCost());
+			leftTableData.add(row);
+		}
+	
+		
+	}
+	
 }
