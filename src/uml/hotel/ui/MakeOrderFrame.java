@@ -155,9 +155,14 @@ public class MakeOrderFrame extends JFrame {
 				
 				//根据roomNum找到相应的订单（如果有），设置为完成状态
 				OrderDAO orderDAO = new OrderDAO();
-				Order order = (Order)orderDAO.findByRoomNum(text).get(0);
-				order.setState(Order.kOrderTypeFinished);
-				orderDAO.attachDirty(order);
+				List<Order> list = orderDAO.findByRoomNum(text);
+				if (list != null && list.size() > 0) {
+					Order order = list.get(0);
+					order.setState(Order.kOrderTypeFinished);
+					orderDAO.attachDirty(order);
+				}
+				
+				
 				
 				setVisible(false);
 				

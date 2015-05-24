@@ -34,6 +34,7 @@ public class ChooseRoomFrame extends JFrame {
 	
 	public static final int kChooseRoomTypeMakeOrder = 0;
 	public static final int kChooseRoomTypePayoff = 1;
+	public static final int kChooseRoomTypeConsume = 2;
 
 	/**
 	 * Launch the application.
@@ -67,6 +68,8 @@ public class ChooseRoomFrame extends JFrame {
 		JLabel label = new JLabel("请输入要下单的房间号");
 		if (this.type == kChooseRoomTypePayoff) {
 			label.setText("请输入要结账的房间号");
+		} else if (type == kChooseRoomTypeConsume) {
+			label.setText("请输入要添加消费的房间号");
 		}
 		label.setBounds(10, 10, 152, 15);
 		contentPane.add(label);
@@ -117,6 +120,16 @@ public class ChooseRoomFrame extends JFrame {
 								List statusList = statusDAO.findByRoomId(selectedRoom.getNumber());
 								RoomStatus status = (RoomStatus)statusList.get(statusList.size() - 1);
 								new PayoffFrame(status).setVisible(true);
+							}
+						} else if (ChooseRoomFrame.this.type == kChooseRoomTypeConsume) {
+							if (selectedRoom.getStatus() != Room.kRoomStatusUsed) {
+								JOptionPane.showMessageDialog(null, "您选择的房间不是入住状态");
+							} else {
+								setVisible(false);
+								RoomStatusDAO statusDAO = new RoomStatusDAO();
+								List statusList = statusDAO.findByRoomId(selectedRoom.getNumber());
+								RoomStatus status = (RoomStatus)statusList.get(statusList.size() - 1);
+								new ConsumeFrame(status).setVisible(true);
 							}
 						}
 						

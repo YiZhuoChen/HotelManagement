@@ -35,33 +35,11 @@ public class StandardSingleJPanel extends BaseRoomPanel {
 
 	@Override
 	public void createButtons() {
-		JButton btnNewButton = new JButton("BD0001");
-		btnNewButton.setBounds(10, 25, 83, 68);
-		Utils.createRoomButton(btnNewButton);
-		add(btnNewButton);
-		
-		
-		JButton btnNewButton_1 = new JButton("BD0002");
-		btnNewButton_1.setBounds(103, 25, 83, 68);
-		Utils.createRoomButton(btnNewButton_1);
-		add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("BD0003");
-		btnNewButton_2.setBounds(196, 25, 83, 68);
-		Utils.createRoomButton(btnNewButton_2);
-		add(btnNewButton_2);
-		
-		JButton btnNewButton_3 = new JButton("BD0004");
-		btnNewButton_3.setBounds(289, 25, 83, 68);
-		Utils.createRoomButton(btnNewButton_3);
-		add(btnNewButton_3);
-		
-		JButton btnNewButton_4 = new JButton("BD0005");
-		btnNewButton_4.setBounds(384, 25, 83, 68);
-		Utils.createRoomButton(btnNewButton_4);
-		add(btnNewButton_4);
-		
-		this.buttons = new JButton[] {btnNewButton, btnNewButton_1, btnNewButton_2, btnNewButton_3, btnNewButton_4};
+		addRoomButtom("BD0001");
+		addRoomButtom("BD0002");
+		addRoomButtom("BD0003");
+		addRoomButtom("BD0004");
+		addRoomButtom("BD0005");
 	}
 	
 	

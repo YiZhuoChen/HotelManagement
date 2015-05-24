@@ -8,8 +8,10 @@ import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
@@ -42,7 +44,10 @@ public class LoginFrame extends JFrame {
 	private JPasswordField passwordField;
 	private JLabel lblV;
 	private JLabel titleLabel;
+	private JRadioButton left;
 
+	private static Admin admin;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -103,11 +108,15 @@ public class LoginFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String user = txtAdmin.getText();
 				String passwd = new String(passwordField.getPassword());
+				boolean isNormal = left.isSelected();
 				
 				AdminDAO adminDao = new AdminDAO();
 				Admin a = (Admin)adminDao.findByUsername(user).get(0);
+				admin = a;
 				List list = adminDao.findByPassword(passwd);
-				if (list.contains(a)) {
+				int type = (isNormal ? Admin.kAdminTypeNormal : Admin.kAdminTypeSuper);
+				List<Admin> admins_type = adminDao.findByType(type);
+				if (list.contains(a) && admins_type.contains(a)) {
 					setVisible(false);
 					new MainFrame().setVisible(true);
 				} else {
@@ -135,6 +144,20 @@ public class LoginFrame extends JFrame {
 		lbladmin.setForeground(Color.red);
 		lbladmin.setBounds(115, 133, 220, 15);
 		contentPane.add(lbladmin);
+		
+		//登录权限
+		left = new JRadioButton("员工");
+		left.setBounds(125, 155, 100, 20);
+		JRadioButton right = new JRadioButton("经理");
+		right.setBounds(235, 155, 100, 20);
+		contentPane.add(left);
+		contentPane.add(right);
+		ButtonGroup group = new ButtonGroup();
+		group.add(left);
+		group.add(right);
+		left.setSelected(true);
+		
+		
 		
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(getWidth() / 2 - 155, 183, 305, 216);
@@ -164,6 +187,10 @@ public class LoginFrame extends JFrame {
 		}, 0, 10);
 		
 		
+	}
+	
+	public static int getCurrentAdminType() {
+		return admin.getType();
 	}
 
 }

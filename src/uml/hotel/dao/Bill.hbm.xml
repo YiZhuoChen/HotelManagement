@@ -35,7 +35,7 @@
                 <comment>客户支付金额</comment>
             </column>
         </property>
-        <property name="special" type="java.lang.String">
+        <property name="special" type="java.lang.Integer">
             <column name="special" length="4">
                 <comment>特殊情况（挂账、退单、免费等）</comment>
             </column>

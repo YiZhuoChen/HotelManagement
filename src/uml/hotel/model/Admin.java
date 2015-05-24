@@ -12,6 +12,9 @@ public class Admin {
 	private Integer type;
 	private String username;
 	private String password;
+	
+	public static int kAdminTypeNormal = 1;
+	public static int kAdminTypeSuper = 0;
 
 	// Constructors
 

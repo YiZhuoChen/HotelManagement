@@ -10,19 +10,19 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <property name="cost" type="java.lang.Float">
-            <column name="cost" not-null="true">
-                <comment>服务费用</comment>
-            </column>
-        </property>
-        <property name="content" type="java.lang.String">
-            <column name="content" length="20" not-null="true">
-                <comment>内容</comment>
-            </column>
-        </property>
         <property name="itemId" type="java.lang.Integer">
             <column name="item_id" not-null="true">
-                <comment>服务项目id</comment>
+                <comment>消费条目id，外键</comment>
+            </column>
+        </property>
+        <property name="count" type="java.lang.Integer">
+            <column name="count" not-null="true">
+                <comment>消费数量</comment>
+            </column>
+        </property>
+        <property name="roomId" type="java.lang.Integer">
+            <column name="room_id" not-null="true">
+                <comment>对应的房间id</comment>
             </column>
         </property>
     </class>

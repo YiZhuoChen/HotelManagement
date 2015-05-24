@@ -14,8 +14,17 @@ public class Bill {
 	private Integer costId;
 	private Float preferential;
 	private Float payoff;
-	private String special;
+	private Integer special;
 	private String other;
+	
+	/**Œﬁ*/
+	public static final int kBillSpecialNone = 0;
+	/**π“’À*/
+	public static final int kBillSpecialGZ = 1;
+	/**ÕÀµ•*/
+	public static final int kBillSpecialCancel = 2;
+	/**√‚∑—*/
+	public static final int kBillSpecialFree = 3;
 
 	// Constructors
 
@@ -35,7 +44,7 @@ public class Bill {
 
 	/** full constructor */
 	public Bill(Integer userId, Integer roomId, Integer costId,
-			Float preferential, Float payoff, String special, String other) {
+			Float preferential, Float payoff, Integer special, String other) {
 		this.userId = userId;
 		this.roomId = roomId;
 		this.costId = costId;
@@ -95,11 +104,11 @@ public class Bill {
 		this.payoff = payoff;
 	}
 
-	public String getSpecial() {
+	public Integer getSpecial() {
 		return this.special;
 	}
 
-	public void setSpecial(String special) {
+	public void setSpecial(Integer special) {
 		this.special = special;
 	}
 

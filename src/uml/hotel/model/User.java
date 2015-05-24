@@ -20,6 +20,11 @@ public class User implements java.io.Serializable {
 	private String other;
 	
 	/**普通宾客*/
+	public static final int kUserTypeNormal = 0;
+	/**VIP宾客*/
+	public static final int kUserTypeVIP = 1;
+	
+	/**普通由来宾客*/
 	public static final int kUserFromNormal = 0;
 	/**网站*/
 	public static final int kUserFromWebsite = 1;

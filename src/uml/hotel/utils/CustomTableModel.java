@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
-public class ReservationTableModel extends DefaultTableModel {
+public class CustomTableModel extends DefaultTableModel {
 	
 	private static final long serialVersionUID = 1L;
 	private String[] columnNames;

@@ -3,6 +3,7 @@ package uml.hotel.ui;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;
@@ -16,17 +17,22 @@ import uml.hotel.dao.BillDAO;
 import uml.hotel.dao.CostDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.ServerDAO;
+import uml.hotel.dao.ServerItemDAO;
 import uml.hotel.dao.UserDAO;
 import uml.hotel.model.Bill;
 import uml.hotel.model.Cost;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
 import uml.hotel.model.Server;
+import uml.hotel.model.ServerItem;
 import uml.hotel.model.User;
 import uml.hotel.notification.NotificationCenter;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -54,6 +60,7 @@ public class PayoffFrame extends JFrame {
 	private JLabel depositLabel;	//已收押金
 	private JLabel preferentiaLabel;//优惠价格
 	private JLabel restCostLabel;	//还需支付
+	private JLabel chargeLabel;		//找零
 
 	/**
 	 * Create the frame.
@@ -66,53 +73,54 @@ public class PayoffFrame extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(10, 10, 514, 63);
+		panel.setBounds(10, 10, 514, 90);
 		contentPane.add(panel);
 		panel.setLayout(null);
+		panel.setBorder(new TitledBorder("宾客信息"));
 		
 		JLabel label = new JLabel("结账单号：");
-		label.setBounds(10, 10, 71, 15);
+		label.setBounds(10, 25, 71, 15);
 		panel.add(label);
 		
 		JLabel label_1 = new JLabel("结账房间：");
-		label_1.setBounds(10, 38, 71, 15);
+		label_1.setBounds(10, 53, 71, 15);
 		panel.add(label_1);
 		
 		JLabel label_2 = new JLabel("宾客姓名：");
-		label_2.setBounds(148, 10, 71, 15);
+		label_2.setBounds(148, 25, 71, 15);
 		panel.add(label_2);
 		
 		JLabel label_3 = new JLabel("消费金额：");
-		label_3.setBounds(148, 38, 71, 15);
+		label_3.setBounds(148, 53, 71, 15);
 		panel.add(label_3);
 		
 		JLabel label_4 = new JLabel("公司名称：");
-		label_4.setBounds(288, 10, 71, 15);
+		label_4.setBounds(300, 25, 71, 15);
 		panel.add(label_4);
 		
 		companyLabel = new JLabel("哈尔滨工业大学（威海）");
 		companyLabel.setForeground(Color.BLUE);
-		companyLabel.setBounds(358, 10, 146, 15);
+		companyLabel.setBounds(370, 25, 146, 15);
 		panel.add(companyLabel);
 		
 		userNameLabel = new JLabel("杨闯");
 		userNameLabel.setForeground(Color.BLUE);
-		userNameLabel.setBounds(218, 10, 54, 15);
+		userNameLabel.setBounds(218, 25, 80, 15);
 		panel.add(userNameLabel);
 		
 		didCostLabel = new JLabel("999999.0");
 		didCostLabel.setForeground(Color.BLUE);
-		didCostLabel.setBounds(218, 38, 54, 15);
+		didCostLabel.setBounds(218, 53, 54, 15);
 		panel.add(didCostLabel);
 		
 		payoffNumLabel = new JLabel("JZ001");
 		payoffNumLabel.setForeground(Color.BLUE);
-		payoffNumLabel.setBounds(80, 10, 54, 15);
+		payoffNumLabel.setBounds(80, 25, 54, 15);
 		panel.add(payoffNumLabel);
 		
 		roomLabel = new JLabel("BZ0001");
 		roomLabel.setForeground(Color.BLUE);
-		roomLabel.setBounds(80, 38, 54, 15);
+		roomLabel.setBounds(80, 53, 54, 15);
 		panel.add(roomLabel);
 		
 		JPanel panel_1 = new JPanel();
@@ -174,17 +182,34 @@ public class PayoffFrame extends JFrame {
 		textField.setBounds(121, 174, 124, 33);
 		panel_1.add(textField);
 		textField.setColumns(10);
+		textField.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					Float restCost = Float.parseFloat(restCostLabel.getText());
+					Float pay = Float.parseFloat(textField.getText());
+					float charge = pay - restCost;
+					chargeLabel.setText("" + charge);
+				} catch (NumberFormatException e) {
+					
+				}
+				
+			}
+			
+		});
 		
 		JLabel label_14 = new JLabel("找零：");
 		label_14.setFont(new Font("Dialog", Font.PLAIN, 16));
 		label_14.setBounds(272, 174, 80, 33);
 		panel_1.add(label_14);
 		
-		JLabel label_15 = new JLabel("0");
-		label_15.setForeground(Color.BLUE);
-		label_15.setFont(new Font("宋体", Font.PLAIN, 17));
-		label_15.setBounds(362, 175, 124, 33);
-		panel_1.add(label_15);
+		chargeLabel = new JLabel("0");
+		chargeLabel.setForeground(Color.BLUE);
+		chargeLabel.setFont(new Font("宋体", Font.PLAIN, 17));
+		chargeLabel.setBounds(362, 175, 124, 33);
+		panel_1.add(chargeLabel);
 		
 		JLabel label_16 = new JLabel("特殊：");
 		label_16.setFont(new Font("Dialog", Font.PLAIN, 16));
@@ -195,6 +220,18 @@ public class PayoffFrame extends JFrame {
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"无", "挂账", "免费", "退单"}));
 		comboBox.setBounds(121, 236, 124, 33);
 		panel_1.add(comboBox);
+		final String origin = restCostLabel.getText();
+		comboBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (((JComboBox)arg0.getSource()).getSelectedIndex() != 0) {
+					restCostLabel.setText("0.00");
+				} else {
+					restCostLabel.setText(origin);
+				}
+			}
+		});
 		
 		JButton button = new JButton("结账");
 		button.setForeground(Color.RED);
@@ -208,7 +245,7 @@ public class PayoffFrame extends JFrame {
 				try {
 					Float payOff = new Float(textField.getText());
 					Bill bill = new Bill(user.getId(), room.getId(), cost.getId(), preferential, payOff);
-					String special = (String)comboBox.getSelectedItem();
+					Integer special = comboBox.getSelectedIndex();
 					bill.setSpecial(special);
 					String other = (String)textField_1.getText();
 					if (other != null) {
@@ -254,6 +291,15 @@ public class PayoffFrame extends JFrame {
 		
 		this.status = status;
 		updatePayoffStatus();
+		
+		//如果是vip，增加标识信息
+		if (user.getType() == User.kUserTypeVIP) {
+			JLabel vipLabel = new JLabel("该用户是vip用户，优惠1％");
+			vipLabel.setForeground(Color.red);
+			vipLabel.setFont(new Font("宋体", Font.PLAIN, 19));
+			vipLabel.setBounds(270, 50, 250, 20);
+			panel.add(vipLabel);
+		}
 	}
 	
 	private void updatePayoffStatus() {
@@ -280,15 +326,19 @@ public class PayoffFrame extends JFrame {
 		//应收金额
 		float roomCost = cost.getCost();
 		float serviceCost = 0;
-		if (cost.getServerItemId() != null) {
-			ServerDAO serverDAO = new ServerDAO();
-			List list = serverDAO.findByItemId(cost.getServerItemId());
-			//加上服务费用
-			for (Object object : list) {
-				Server server = (Server)object;
-				serviceCost += server.getCost();
-			}
+			
+		ServerDAO serverDAO = new ServerDAO();
+		List list = serverDAO.findByRoomId(room.getId());
+		//加上服务费用
+		for (Object object : list) {
+			Server server = (Server)object;
+			int itemID = server.getItemId();
+			ServerItemDAO itemDAO = new ServerItemDAO();
+			ServerItem item = itemDAO.findById(itemID);
+			//单价乘以数量
+			serviceCost += item.getCost() * server.getCount();
 		}
+		
 		float sum = roomCost + serviceCost;
 		shouldPayLabel.setText("" + sum);
 		//额外消费

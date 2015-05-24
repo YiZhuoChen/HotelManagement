@@ -6,7 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -16,10 +20,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import uml.hotel.dao.CostDAO;
+import uml.hotel.dao.OrderDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
 import uml.hotel.dao.UserDAO;
 import uml.hotel.model.Cost;
+import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
 import uml.hotel.model.User;
@@ -28,7 +34,7 @@ import uml.hotel.notification.Observer;
 import uml.hotel.utils.Utils;
 
 public abstract class BaseRoomPanel extends JPanel implements Observer, ActionListener {
-	protected JButton[] buttons;
+	protected Vector<JButton> buttons;
 	private JPopupMenu menu;
 	//单击查看状态时选中的按钮
 	private JButton selectedBtn;
@@ -36,19 +42,40 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 	//换房时拖拽的按钮
 	private JButton draggedButton;
 	private Point startPoint;
+	
+	//当前最后一个房间的下一个房间按钮的下标
+	private int index;
 
 	/**
 	 * Create the panel.
 	 */
 	public BaseRoomPanel() {
 		setLayout(null);
-		
+		this.buttons = new Vector<JButton>();
 		initPopupMenu();
 		
 		createButtons();
 		
 		setUpButtons();
 		
+	}
+	
+	public void addRoomButtom(String btnName) {
+		final int width = 83;
+		final int height = 68;
+		final int row_room_count = 10;
+		final int row_padding = 10;
+		final int column_padding = 25;
+		
+		JButton btnNewButton = new JButton(btnName);
+		btnNewButton.setBounds(row_padding + (index % row_room_count) * (width + row_padding),
+				column_padding + (index / row_room_count) * (height + column_padding),
+				width, height);
+		Utils.createRoomButton(btnNewButton);
+		add(btnNewButton);
+		buttons.add(btnNewButton);
+		
+		index++;
 	}
 
 	@Override
@@ -77,7 +104,10 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				RoomStatusDAO statusDAO = new RoomStatusDAO();
+				List<RoomStatus> list = statusDAO.findByRoomId(selectedBtn.getText());
+				RoomStatus status = list.get(list.size() - 1);
+				new ConsumeFrame(status).setVisible(true);
 			}
 		});
 		menu.add(item1);
@@ -108,7 +138,8 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 			public void actionPerformed(ActionEvent e) {
 				RoomDAO roomDAO = new RoomDAO();
 				Room room = (Room)roomDAO.findByNumber(selectedBtn.getText()).get(0);
-				room.setStatus(Room.kRoomStatusAvaliable);
+				//设置正确的房态
+				setProperRoomStateForRoom(room);
 				//保存到数据库
 				roomDAO.attachDirty(room);
 				//发通知：房间状态改变
@@ -240,7 +271,29 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 									int result = JOptionPane.showConfirmDialog(null, "确认要换房吗?");
 									if (result == JOptionPane.OK_OPTION) {
 										target.setStatus(source.getStatus());
-										source.setStatus(Room.kRoomStatusAvaliable);
+										
+										//查找source正确的房态
+										setProperRoomStateForRoom(source);
+//										
+//										OrderDAO orderDAO = new OrderDAO();
+//										List<Order> orders = orderDAO.findByRoomNum(source.getNumber());
+//										if (orders != null && orders.size() > 0) {
+//											Order order = orders.get(orders.size() - 1);
+//											SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//											Date arrive;
+//											try {
+//												arrive = df.parse(order.getArriveTime());
+//												if (arrive.compareTo(new Date()) != -1) {
+//													source.setStatus(Room.kRoomStatusReserved);
+//												}
+//											} catch (ParseException e) {
+//												// TODO Auto-generated catch block
+//												e.printStackTrace();
+//											}
+//										} else {
+//											source.setStatus(Room.kRoomStatusAvaliable);
+//										}
+										
 										
 										//创建新的房间状态信息
 										RoomStatusDAO statusDAO = new RoomStatusDAO();
@@ -335,6 +388,27 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 		}
 	}
 	
-	
+	public void setProperRoomStateForRoom(Room source) {
+		RoomStatusDAO statusDAO = new RoomStatusDAO();
+		List<RoomStatus> list = statusDAO.findByRoomId(source.getNumber());
+		
+		OrderDAO orderDAO = new OrderDAO();
+		List<Order> orders = orderDAO.findByRoomNum(source.getNumber());
+		if (orders != null && orders.size() > 0) {
+			Order order = orders.get(orders.size() - 1);
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date arrive;
+			try {
+				arrive = df.parse(order.getArriveTime());
+				if (arrive.compareTo(new Date()) != -1) {
+					source.setStatus(Room.kRoomStatusReserved);
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			source.setStatus(Room.kRoomStatusAvaliable);
+		}
+	}
 	
 }

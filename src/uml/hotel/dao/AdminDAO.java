@@ -59,7 +59,7 @@ public class AdminDAO extends BaseHibernateDAO {
 		log.debug("getting Admin instance with id: " + id);
 		try {
 			Admin instance = (Admin) getSession()
-					.get("uml.hotel.dao.Admin", id);
+					.get("uml.hotel.model.Admin", id);
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);

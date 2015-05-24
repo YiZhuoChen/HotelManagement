@@ -22,7 +22,7 @@ import uml.hotel.model.User;
 import uml.hotel.notification.NotificationCenter;
 import uml.hotel.notification.Observer;
 import uml.hotel.utils.HeaderRenderer;
-import uml.hotel.utils.ReservationTableModel;
+import uml.hotel.utils.CustomTableModel;
 import uml.hotel.utils.Utils;
 import javax.swing.border.LineBorder;
 import javax.swing.table.TableColumn;
@@ -211,7 +211,7 @@ public class ReservationFrame extends JFrame implements Observer {
 		scrollPane.setBounds(0, 0, 489, 324);
 		panel_5.add(scrollPane);
 		
-		ReservationTableModel tableModel = new ReservationTableModel();
+		CustomTableModel tableModel = new CustomTableModel();
 		table = new JTable(tableModel);
 		table.getTableHeader().setReorderingAllowed(false);
 		//设置为单选
@@ -301,7 +301,7 @@ public class ReservationFrame extends JFrame implements Observer {
 			data.add(row);
 		}
 		
-		ReservationTableModel model = (ReservationTableModel)table.getModel();
+		CustomTableModel model = (CustomTableModel)table.getModel();
 		model.setData(data);
 	}
 

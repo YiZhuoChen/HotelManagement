@@ -4,14 +4,14 @@ package uml.hotel.model;
  * Server entity. @author MyEclipse Persistence Tools
  */
 
-public class Server {
+public class Server implements java.io.Serializable {
 
 	// Fields
 
 	private Integer id;
-	private Float cost;
-	private String content;
 	private Integer itemId;
+	private Integer count;
+	private Integer roomId;
 
 	// Constructors
 
@@ -20,9 +20,10 @@ public class Server {
 	}
 
 	/** full constructor */
-	public Server(Float cost, String content) {
-		this.cost = cost;
-		this.content = content;
+	public Server(Integer itemId, Integer count, Integer roomId) {
+		this.itemId = itemId;
+		this.count = count;
+		this.roomId = roomId;
 	}
 
 	// Property accessors
@@ -35,27 +36,28 @@ public class Server {
 		this.id = id;
 	}
 
-	public Float getCost() {
-		return this.cost;
-	}
-
-	public void setCost(Float cost) {
-		this.cost = cost;
-	}
-
-	public String getContent() {
-		return this.content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
 	public Integer getItemId() {
 		return this.itemId;
 	}
-	
+
 	public void setItemId(Integer itemId) {
 		this.itemId = itemId;
 	}
+
+	public Integer getCount() {
+		return this.count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Integer getRoomId() {
+		return this.roomId;
+	}
+
+	public void setRoomId(Integer roomId) {
+		this.roomId = roomId;
+	}
+
 }

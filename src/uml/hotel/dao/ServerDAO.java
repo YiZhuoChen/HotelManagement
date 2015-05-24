@@ -25,9 +25,9 @@ import uml.hotel.model.Server;
 public class ServerDAO extends BaseHibernateDAO {
 	private static final Logger log = LoggerFactory.getLogger(ServerDAO.class);
 	// property constants
-	public static final String COST = "cost";
-	public static final String CONTENT = "content";
-	public static final String ITEM_ID = "item_id";
+	public static final String ITEM_ID = "itemId";
+	public static final String COUNT = "count";
+	public static final String ROOM_ID = "roomId";
 
 	public void save(Server transientInstance) {
 		log.debug("saving Server instance");
@@ -46,6 +46,7 @@ public class ServerDAO extends BaseHibernateDAO {
 
 	public void delete(Server persistentInstance) {
 		log.debug("deleting Server instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().delete(persistentInstance);
 			log.debug("delete successful");
@@ -53,6 +54,9 @@ public class ServerDAO extends BaseHibernateDAO {
 			log.error("delete failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public Server findById(java.lang.Integer id) {
@@ -70,7 +74,7 @@ public class ServerDAO extends BaseHibernateDAO {
 	public List findByExample(Server instance) {
 		log.debug("finding Server instance by example");
 		try {
-			List results = getSession().createCriteria("uml.hotel.dao.Server")
+			List results = getSession().createCriteria("uml.hotel.model.Server")
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());
@@ -96,16 +100,16 @@ public class ServerDAO extends BaseHibernateDAO {
 		}
 	}
 
-	public List findByCost(Object cost) {
-		return findByProperty(COST, cost);
-	}
-
-	public List findByContent(Object content) {
-		return findByProperty(CONTENT, content);
-	}
-	
 	public List findByItemId(Object itemId) {
 		return findByProperty(ITEM_ID, itemId);
+	}
+
+	public List findByCount(Object count) {
+		return findByProperty(COUNT, count);
+	}
+
+	public List findByRoomId(Object roomId) {
+		return findByProperty(ROOM_ID, roomId);
 	}
 
 	public List findAll() {
@@ -134,6 +138,7 @@ public class ServerDAO extends BaseHibernateDAO {
 
 	public void attachDirty(Server instance) {
 		log.debug("attaching dirty Server instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().saveOrUpdate(instance);
 			log.debug("attach successful");
@@ -141,6 +146,9 @@ public class ServerDAO extends BaseHibernateDAO {
 			log.error("attach failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public void attachClean(Server instance) {

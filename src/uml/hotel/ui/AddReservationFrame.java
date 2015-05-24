@@ -17,8 +17,10 @@ import javax.swing.JOptionPane;
 
 import uml.hotel.dao.OrderDAO;
 import uml.hotel.dao.RoomDAO;
+import uml.hotel.dao.RoomStatusDAO;
 import uml.hotel.model.Order;
 import uml.hotel.model.Room;
+import uml.hotel.model.RoomStatus;
 import uml.hotel.notification.NotificationCenter;
 import uml.hotel.utils.CalendarFrame;
 import uml.hotel.utils.CalendarFrameDelegate;
@@ -28,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -187,18 +190,7 @@ public class AddReservationFrame extends JFrame implements CalendarFrameDelegate
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				String roomNum = (String) roomNumBox.getSelectedItem();
-				
-				List<Room> roomList = roomDAO.findByNumber(roomNum);
-				Room selectedRoom = (Room)roomList.get(roomList.size() - 1);
-				if (selectedRoom.getStatus() != Room.kRoomStatusAvaliable) {
-					int result = JOptionPane.showConfirmDialog(null, "预定房间的当期房态为非可供状态，是否继续？");
-					if (result != JOptionPane.OK_OPTION) {
-						return;
-					}
-				}
-				
+				//获取预定信息
 				String userName = textField.getText();
 				String tel = textField_1.getText();
 				String company = textField_2.getText();
@@ -208,16 +200,56 @@ public class AddReservationFrame extends JFrame implements CalendarFrameDelegate
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:ss:mm");
 				String now = df.format(new Date());
 				
+				//是否需要通知更新房态
+				boolean shouldChangeState = true;
+				
+				String roomNum = (String) roomNumBox.getSelectedItem();
+				
+				List<Room> roomList = roomDAO.findByNumber(roomNum);
+				Room selectedRoom = (Room)roomList.get(roomList.size() - 1);
+				if (selectedRoom.getStatus() == Room.kRoomStatusUsed) {
+					RoomStatusDAO statusDAO = new RoomStatusDAO();
+					List<RoomStatus> statusList = statusDAO.findByRoomId(selectedRoom.getNumber());
+					RoomStatus status = statusList.get(statusList.size() - 1);
+					String endTime = status.getEndTime();
+					
+					try {
+						Date end = df.parse(endTime);
+						Date arrive = df.parse(arriveTime);
+						int compareResult = end.compareTo(arrive);	//-1表示end在arrive前, 1表示end在arrive后
+						if (compareResult == 1) {
+							JOptionPane.showMessageDialog(null, "预定时间与房间结束时间冲突，预定添加失败");
+							return;
+						}
+						
+						//此时只添加预定，不更新房态
+						shouldChangeState = false;
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+				} else if (selectedRoom.getStatus() != Room.kRoomStatusAvaliable) {
+					int result = JOptionPane.showConfirmDialog(null, "预定房间的当期房态为非可供状态，是否继续？");
+					if (result != JOptionPane.OK_OPTION) {
+						return;
+					}
+				}
+				
 				//保存预定信息
 				OrderDAO orderDAO = new OrderDAO();
 				Order order = new Order(arriveTime, now, type, Order.kOrderTypeOrdering, roomNum, userName, company, tel, from);
 				orderDAO.save(order);
 				
-				//修改房间状态
-				selectedRoom.setStatus(Room.kRoomStatusReserved);
+				
 				roomDAO.attachDirty(selectedRoom);
-				//发送通知：房间状态改变
-				NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, roomNum);
+				if (shouldChangeState) {
+					//修改房间状态
+					selectedRoom.setStatus(Room.kRoomStatusReserved);
+					//发送通知：房间状态改变
+					NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, roomNum);
+				}
 				//发送通知，预定状态改变
 				NotificationCenter.postNotification(NotificationCenter.kReservationStateDidChangeNotification, null);
 				
