@@ -134,6 +134,7 @@ public class AdminDAO extends BaseHibernateDAO {
 
 	public void attachDirty(Admin instance) {
 		log.debug("attaching dirty Admin instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().saveOrUpdate(instance);
 			log.debug("attach successful");
@@ -141,6 +142,9 @@ public class AdminDAO extends BaseHibernateDAO {
 			log.error("attach failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public void attachClean(Admin instance) {

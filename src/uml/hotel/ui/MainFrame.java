@@ -11,10 +11,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 import javax.swing.JButton;
 
+import uml.hotel.model.Admin;
 import uml.hotel.notification.NotificationCenter;
 import uml.hotel.utils.RoomStateTipTimer;
 import uml.hotel.utils.Utils;
@@ -292,6 +294,28 @@ public class MainFrame extends JFrame {
 		JLabel label_5 = new JLabel("营业查询");
 		label_5.setBounds(310, 58, 54, 15);
 		panel.add(label_5);
+		
+		JButton button_8 = new JButton("");
+		button_8.setBounds(370, 10, 48, 48);
+		Utils.createToolBarItem(button_8, "pic/ToolBar/m09.gif");
+		panel.add(button_8);
+		button_8.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//系统设置，只有管理员可以系统设置
+				if (LoginFrame.getCurrentAdmin() == null || LoginFrame.getCurrentAdmin().getType() == Admin.kAdminTypeNormal) {
+					JOptionPane.showMessageDialog(null, "您不是管理员，无法进行系统设置");
+					return;
+				}
+				
+				new SettingFrame().setVisible(true);
+			}
+		});
+		
+		JLabel label_6 = new JLabel("系统设置");
+		label_6.setBounds(370, 58, 54, 15);
+		panel.add(label_6);
 	}
 	
 	private void addBottomButtons(JPanel container) {

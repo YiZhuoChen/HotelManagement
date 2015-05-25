@@ -17,6 +17,7 @@ import uml.hotel.dao.RoomStatusDAO;
 import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
+import uml.hotel.notification.NotificationCenter;
 
 public class RoomStateTipTimer extends TimerTask {
 	
@@ -35,7 +36,7 @@ public class RoomStateTipTimer extends TimerTask {
 		
 		checkUsedRooms();
 		checkReservedRooms();
-		
+		updateReservationInfo();
 	}
 	
 	public void checkUsedRooms() {
@@ -111,6 +112,31 @@ public class RoomStateTipTimer extends TimerTask {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void updateReservationInfo() {
+		OrderDAO orderDAO = new OrderDAO();
+		List<Order> orders = orderDAO.findByState(Order.kOrderStateOrdering);
+		for (Order order : orders) {
+			String arriveTime = order.getArriveTime();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				Date arriveDate = df.parse(arriveTime);
+				Date now = new Date();
+				if (arriveDate.before(now)) {
+					order.setState(Order.kOrderStateCanceled);
+					orderDAO.attachDirty(order);
+					
+					//发通知：预定状态改变
+					NotificationCenter.postNotification(NotificationCenter.kReservationStateDidChangeNotification, null);
+					JOptionPane.showMessageDialog(null, "预定房间" + order.getRoomNum() + "已过期，自动设为取消状态");
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	}
 

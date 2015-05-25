@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,8 +35,10 @@ import uml.hotel.notification.NotificationCenter;
 import uml.hotel.notification.Observer;
 import uml.hotel.utils.Utils;
 
-public abstract class BaseRoomPanel extends JPanel implements Observer, ActionListener {
+public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 	protected Vector<JButton> buttons;
+	protected String prefix;
+	
 	private JPopupMenu menu;
 	//单击查看状态时选中的按钮
 	private JButton selectedBtn;
@@ -58,6 +62,12 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 		
 		setUpButtons();
 		
+		//监听房间状态改变的通知
+		NotificationCenter.addNotification(this, NotificationCenter.kRoomStatusDidChangeNotification);
+		//监听显示房间类型状态改变的通知
+		NotificationCenter.addNotification(this, NotificationCenter.kShowSpecialRoomNotification);
+		//监听房间数量和信息的改变的通知
+		NotificationCenter.addNotification(this, NotificationCenter.kRoomInfoDidChangeNotification);
 	}
 	
 	public void addRoomButtom(String btnName) {
@@ -162,7 +172,34 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 	/**
 	 *	创建按钮 
 	 */
-	abstract public void createButtons();
+	public void createButtons() {
+		RoomDAO roomDAO = new RoomDAO();
+		List<Room> rooms = roomDAO.findByRoomTypePrefix(prefix);
+		for (int i = 1; i <= rooms.size(); i++) {
+			DecimalFormat df = new DecimalFormat("0000");
+			String suffix = df.format(i);
+			addRoomButtom(prefix + suffix);
+		}		
+	}
+	
+	/**
+	 * 消除所有按钮
+	 */
+	public void removeButtons() {
+		for (int i = 0; i < buttons.size(); i++) {
+			buttons.get(i).getParent().remove(buttons.get(i));
+		}
+		buttons.removeAllElements();
+	}
+	
+	/**
+	 * 更新所有按钮
+	 */
+	public void updateButtons() {
+		removeButtons();
+		createButtons();
+		setUpButtons();
+	}
 	
 	/**
 	 * 为所有按钮添加监听器
@@ -348,11 +385,6 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 			
 			
 		}
-		
-		//监听房间状态改变的通知
-		NotificationCenter.addNotification(this, NotificationCenter.kRoomStatusDidChangeNotification);
-		//监听显示房间类型状态改变的通知
-		NotificationCenter.addNotification(this, NotificationCenter.kShowSpecialRoomNotification);
 	}
 
 	@Override

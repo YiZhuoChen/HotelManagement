@@ -1,6 +1,7 @@
 package uml.hotel.ui;
 
 import java.awt.EventQueue;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -13,12 +14,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
+import uml.hotel.dao.BillDAO;
+import uml.hotel.dao.RoomDAO;
+import uml.hotel.dao.RoomStatusDAO;
+import uml.hotel.model.Bill;
+import uml.hotel.model.Room;
+import uml.hotel.model.RoomStatus;
 import uml.hotel.utils.CustomTableModel;
 import uml.hotel.utils.HeaderRenderer;
 
 public class BillQueryFrame extends JFrame {
-
+	
 	private JPanel contentPane;
+	
+	private JLabel billCountLabel;		//账单总数
+	private JLabel rateLabel;			//入住率
+	private JLabel roomCostLabel;		//房间消费总额
+	private JLabel serviceCostLabel;	//额外消费总额
+	private JLabel billCostLabel;		//账单消费总额
 	
 	private JTable table;
 	private Vector<Vector<Object>> data = new Vector<Vector<Object>>();
@@ -75,6 +88,7 @@ public class BillQueryFrame extends JFrame {
 		
 		
 		searchTabbedPane.add("按日期查询", new SearchByDatePanel(data, table));
+		searchTabbedPane.add("按姓名查询", new SearchByNamePanel(data, table));
 		
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -89,7 +103,7 @@ public class BillQueryFrame extends JFrame {
 		label.setBounds(10, 10, 65, 15);
 		panel_1.add(label);
 		
-		JLabel billCountLabel = new JLabel("1");
+		billCountLabel = new JLabel("1");
 		billCountLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		billCountLabel.setBounds(80, 10, 46, 15);
 		panel_1.add(billCountLabel);
@@ -98,7 +112,7 @@ public class BillQueryFrame extends JFrame {
 		label_2.setBounds(136, 10, 95, 15);
 		panel_1.add(label_2);
 		
-		JLabel billCostLabel = new JLabel("1");
+		billCostLabel = new JLabel("1");
 		billCostLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		billCostLabel.setBounds(230, 10, 46, 15);
 		panel_1.add(billCostLabel);
@@ -107,12 +121,12 @@ public class BillQueryFrame extends JFrame {
 		label_1.setBounds(286, 10, 95, 15);
 		panel_1.add(label_1);
 		
-		JLabel serviceCostLabel = new JLabel("1");
+		serviceCostLabel = new JLabel("1");
 		serviceCostLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		serviceCostLabel.setBounds(380, 10, 46, 15);
 		panel_1.add(serviceCostLabel);
 		
-		JLabel roomCostLabel = new JLabel("1");
+		roomCostLabel = new JLabel("1");
 		roomCostLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		roomCostLabel.setBounds(530, 10, 46, 15);
 		panel_1.add(roomCostLabel);
@@ -121,7 +135,7 @@ public class BillQueryFrame extends JFrame {
 		label_4.setBounds(436, 10, 95, 15);
 		panel_1.add(label_4);
 		
-		JLabel rateLabel = new JLabel("1");
+		rateLabel = new JLabel("1");
 		rateLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		rateLabel.setBounds(656, 10, 46, 15);
 		panel_1.add(rateLabel);
@@ -130,6 +144,55 @@ public class BillQueryFrame extends JFrame {
 		label_5.setBounds(586, 10, 65, 15);
 		panel_1.add(label_5);
 		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				setLabels();		
+			}
+		}).start();
+		
+	}
+	
+	public void setLabels() {
+		RoomStatusDAO statusDAO = new RoomStatusDAO();
+		RoomDAO roomDAO = new RoomDAO();
+		
+		//账单总数
+		List<RoomStatus> allStatus = statusDAO.findAll();
+		if (allStatus == null) {
+			billCountLabel.setText("0");
+		} else {
+			billCountLabel.setText("" + allStatus.size());
+		}
+		
+		//账单消费总额
+		float billSum = 0;
+		float serviceSum = 0;
+		float roomSum = 0;
+		for (RoomStatus roomStatus : allStatus) {
+			Room room = (Room)roomDAO.findByNumber(roomStatus.getRoomId()).get(0);
+			serviceSum += room.getServiceCost();
+			roomSum = room.getCost() * roomStatus.getLivingDay();
+		}
+		billSum += serviceSum + roomSum;
+		billCostLabel.setText("" + billSum);
+		
+		//额外消费总额
+		serviceCostLabel.setText("" + serviceSum);
+		//房间消费总额
+		roomCostLabel.setText("" + roomSum);
+		//总入住率
+		List<Room> rooms = roomDAO.findAll();
+		int used = 0;
+		for (Room room : rooms) {
+			if (room.getStatus() == Room.kRoomStatusUsed) {
+				used++;
+			}
+		}
+		float rate = (float)used / rooms.size();
+		rateLabel.setText((int)(rate * 100) + "%");
 	}
 	
 }

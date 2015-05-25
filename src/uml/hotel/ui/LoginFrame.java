@@ -189,8 +189,13 @@ public class LoginFrame extends JFrame {
 		
 	}
 	
-	public static int getCurrentAdminType() {
-		return admin.getType();
+	public static Admin getCurrentAdmin() {
+		return admin;
+	}
+	
+	public static void updateCurrentAdmin() {
+		AdminDAO adminDao = new AdminDAO();
+		admin = (Admin)adminDao.findByUsername(admin.getUsername()).get(0);
 	}
 
 }

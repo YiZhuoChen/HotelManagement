@@ -137,6 +137,15 @@ public class UserDAO extends BaseHibernateDAO {
 		return findByProperty(OTHER, other);
 	}
 
+	public List findByName_Blur(String name) {   
+		getSession().beginTransaction();  
+		String strSQL = "from User as model where model.name like :name";  		  
+		Query query = getSession().createQuery(strSQL);  
+		query.setString("name", "%"+ name +"%");  		         
+		List result = query.list();  
+		return result;
+	}
+	
 	public List findAll() {
 		log.debug("finding all User instances");
 		try {

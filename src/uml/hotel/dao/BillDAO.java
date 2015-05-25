@@ -26,7 +26,7 @@ public class BillDAO extends BaseHibernateDAO {
 	private static final Logger log = LoggerFactory.getLogger(BillDAO.class);
 	// property constants
 	public static final String USER_ID = "userId";
-	public static final String ROOM_ID = "roomId";
+	public static final String ROOM_STATUS_ID = "roomStatusId";
 	public static final String COST_ID = "costId";
 	public static final String PREFERENTIAL = "preferential";
 	public static final String PAYOFF = "payoff";
@@ -104,7 +104,7 @@ public class BillDAO extends BaseHibernateDAO {
 	}
 
 	public List findByRoomId(Object roomId) {
-		return findByProperty(ROOM_ID, roomId);
+		return findByProperty(ROOM_STATUS_ID, roomId);
 	}
 
 	public List findByCostId(Object costId) {

@@ -65,7 +65,7 @@ public class PayoffFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public PayoffFrame(RoomStatus status) {
+	public PayoffFrame(final RoomStatus status) {
 		setBounds(100, 100, 550, 500);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -244,7 +244,7 @@ public class PayoffFrame extends JFrame {
 				// TODO 将账单信息保存到数据库中
 				try {
 					Float payOff = new Float(textField.getText());
-					Bill bill = new Bill(user.getId(), room.getId(), cost.getId(), preferential, payOff);
+					Bill bill = new Bill(user.getId(), status.getId(), cost.getId(), preferential, payOff);
 					Integer special = comboBox.getSelectedIndex();
 					bill.setSpecial(special);
 					String other = (String)textField_1.getText();
@@ -325,7 +325,7 @@ public class PayoffFrame extends JFrame {
 		companyLabel.setText(user.getCompany());
 		//应收金额
 		float roomCost = cost.getCost();
-		//获取额外消费总额
+		//获取额外消费总额 
 		float serviceCost = room.getServiceCost();
 		
 		float sum = roomCost + serviceCost;

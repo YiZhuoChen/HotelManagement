@@ -12,7 +12,7 @@ public class Bill {
 
 	private Integer id;
 	private Integer userId;
-	private Integer roomId;
+	private Integer roomStatusId;
 	private Integer costId;
 	private Float preferential;
 	private Float payoff;
@@ -35,20 +35,20 @@ public class Bill {
 	}
 
 	/** minimal constructor */
-	public Bill(Integer userId, Integer roomId, Integer costId,
+	public Bill(Integer userId, Integer roomStatusId, Integer costId,
 			Float preferential, Float payoff) {
 		this.userId = userId;
-		this.roomId = roomId;
+		this.roomStatusId = roomStatusId;
 		this.costId = costId;
 		this.preferential = preferential;
 		this.payoff = payoff;
 	}
 
 	/** full constructor */
-	public Bill(Integer userId, Integer roomId, Integer costId,
+	public Bill(Integer userId, Integer roomStatusId, Integer costId,
 			Float preferential, Float payoff, Integer special, String other) {
 		this.userId = userId;
-		this.roomId = roomId;
+		this.roomStatusId = roomStatusId;
 		this.costId = costId;
 		this.preferential = preferential;
 		this.payoff = payoff;
@@ -74,12 +74,12 @@ public class Bill {
 		this.userId = userId;
 	}
 
-	public Integer getRoomId() {
-		return this.roomId;
+	public Integer getRoomStatusId() {
+		return this.roomStatusId;
 	}
 
-	public void setRoomId(Integer roomId) {
-		this.roomId = roomId;
+	public void setRoomStatusId(Integer roomStatusId) {
+		this.roomStatusId = roomStatusId;
 	}
 
 	public Integer getCostId() {

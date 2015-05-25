@@ -50,6 +50,7 @@ public class RoomDAO extends BaseHibernateDAO {
 
 	public void delete(Room persistentInstance) {
 		log.debug("deleting Room instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().delete(persistentInstance);
 			log.debug("delete successful");
@@ -57,6 +58,9 @@ public class RoomDAO extends BaseHibernateDAO {
 			log.error("delete failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public Room findById(java.lang.Integer id) {
@@ -125,6 +129,15 @@ public class RoomDAO extends BaseHibernateDAO {
 	
 	public List findByLocation(Object location) {
 		return findByProperty(LOCATION, location);
+	}
+	
+	public List findByRoomTypePrefix(String prefix) {
+		getSession().beginTransaction();  
+		String strSQL = "from Room as model where model.number like :number";  		  
+		Query query = getSession().createQuery(strSQL);  
+		query.setString("number", prefix +"%");  		         
+		List result = query.list();  
+		return result;
 	}
 
 	public List findAll() {

@@ -15,8 +15,8 @@
                 <comment>用户id，外键</comment>
             </column>
         </property>
-        <property name="roomId" type="java.lang.Integer">
-            <column name="room_id" not-null="true">
+        <property name="roomStatusId" type="java.lang.Integer">
+            <column name="room_status_id" not-null="true">
                 <comment>房间id，外键</comment>
             </column>
         </property>
