@@ -40,9 +40,9 @@
                 <comment>登记时间</comment>
             </column>
         </property>
-        <property name="longStay" type="java.lang.Integer">
-            <column name="long_stay" not-null="true">
-                <comment>0-不长住 1-长住</comment>
+        <property name="hasReminded" type="java.lang.Integer">
+            <column name="hasReminded" not-null="true">
+                <comment>0-没有提醒过 1-提醒过</comment>
             </column>
         </property>
         <property name="type" type="java.lang.Integer">

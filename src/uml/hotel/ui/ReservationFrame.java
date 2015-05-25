@@ -30,6 +30,10 @@ import javax.swing.table.TableColumn;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -152,6 +156,13 @@ public class ReservationFrame extends JFrame implements Observer {
 					return;
 				}
 				
+				//判断状态
+				String state = (String)table.getModel().getValueAt(selectedIndex, 1);
+				if (state.equals("预定中") == false) {
+					JOptionPane.showMessageDialog(null, "您选择的房间不是预定状态");
+					return;
+				}
+				
 				//获取选中预定信息
 				int id = (Integer)table.getModel().getValueAt(selectedIndex, 0);
 				OrderDAO orderDAO = new OrderDAO();
@@ -243,21 +254,16 @@ public class ReservationFrame extends JFrame implements Observer {
 		for (int i = 0; i < orders.size(); i++) {
 			Order order = orders.get(i);
 			
-			//如果不是正在预定的订单，则忽略
-			if (order.getState() != Order.kOrderTypeOrdering) {
-				continue;
-			}
-			
 			Vector<Object> row = new Vector<Object>();
 			//预定单号
 			row.add(order.getId());
 			//预定状态
 			int state = order.getState();
-			if (state == Order.kOrderTypeOrdering) {
+			if (state == Order.kOrderStateOrdering) {
 				row.add("预定中");
-			} else if (state == Order.kOrderTypeFinished) {
+			} else if (state == Order.kOrderStateFinished) {
 				row.add("预定完成");
-			} else if (state == Order.kOrderTypeCanceled) {
+			} else if (state == Order.kOrderStateCanceled) {
 				row.add("预定取消");
 			} else {
 				row.add("");
@@ -301,9 +307,29 @@ public class ReservationFrame extends JFrame implements Observer {
 			data.add(row);
 		}
 		
+		Collections.sort(data, orderComparator);
+		
 		CustomTableModel model = (CustomTableModel)table.getModel();
 		model.setData(data);
 	}
+	
+	//对订单信息排序
+	private final Comparator<Vector<Object>> orderComparator = new Comparator<Vector<Object>>() {
+
+		@Override
+		public int compare(Vector<Object> o1, Vector<Object> o2) {
+			if (o1 == null || o1.size() < 2) {
+			    return -1;
+			}
+			if (o2 == null || o2.size() < 2) {
+			    return 1;
+			}
+			String s1 = (String)o1.get(1);
+			String s2 = (String)o2.get(1);
+			return (s1.compareTo(s2));
+		}
+		
+	};
 
 	@Override
 	public void receivedNotification(String name, Object userinfo) {

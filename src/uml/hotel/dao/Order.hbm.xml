@@ -55,5 +55,10 @@
                 <comment>宾客来源 0普通宾客1网站2旅行社3其他</comment>
             </column>
         </property>
+        <property name="hasReminded" type="java.lang.Integer">
+            <column name="hasReminded" not-null="true">
+                <comment>是否已经提醒过，0-未提醒，1-提醒过</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

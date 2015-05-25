@@ -34,6 +34,7 @@ public class OrderDAO extends BaseHibernateDAO {
 	public static final String COMPANY = "company";
 	public static final String TEL = "tel";
 	public static final String USER_FROM = "userFrom";
+	public static final String HAS_REMINDED = "hasReminded";
 
 	public void save(Order transientInstance) {
 		log.debug("saving Order instance");
@@ -140,6 +141,10 @@ public class OrderDAO extends BaseHibernateDAO {
 
 	public List findByUserFrom(Object userFrom) {
 		return findByProperty(USER_FROM, userFrom);
+	}
+
+	public List findByHasReminded(Object hasReminded) {
+		return findByProperty(HAS_REMINDED, hasReminded);
 	}
 
 	public List findAll() {

@@ -1,5 +1,6 @@
 package uml.hotel.dao;
 
+import java.util.Date;
 import java.util.List;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
@@ -32,7 +33,7 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 	public static final String ROOM_ID = "roomId";
 	public static final String DEPOSIT = "deposit";
 	public static final String TIME = "time";
-	public static final String LONG_STAY = "longStay";
+	public static final String HAS_REMINDED = "hasReminded";
 	public static final String TYPE = "type";
 
 	public void save(RoomStatus transientInstance) {
@@ -59,6 +60,7 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 			log.error("delete failed", re);
 			throw re;
 		}
+		
 	}
 
 	public RoomStatus findById(java.lang.Integer id) {
@@ -77,7 +79,7 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 		log.debug("finding RoomStatus instance by example");
 		try {
 			List results = getSession()
-					.createCriteria("uml.hotel.dao.RoomStatus")
+					.createCriteria("uml.hotel.model.RoomStatus")
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());
@@ -127,8 +129,8 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 		return findByProperty(TIME, time);
 	}
 
-	public List findByLongStay(Object longStay) {
-		return findByProperty(LONG_STAY, longStay);
+	public List findByHasReminded(Object hasReminded) {
+		return findByProperty(HAS_REMINDED, hasReminded);
 	}
 
 	public List findByType(Object type) {
@@ -162,6 +164,7 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 
 	public void attachDirty(RoomStatus instance) {
 		log.debug("attaching dirty RoomStatus instance");
+		Transaction trans = getSession().beginTransaction();
 		try {
 			getSession().saveOrUpdate(instance);
 			log.debug("attach successful");
@@ -169,6 +172,9 @@ public class RoomStatusDAO extends BaseHibernateDAO {
 			log.error("attach failed", re);
 			throw re;
 		}
+		trans.commit();
+		getSession().flush();
+		getSession().close();
 	}
 
 	public void attachClean(RoomStatus instance) {

@@ -158,7 +158,7 @@ public class MakeOrderFrame extends JFrame {
 				List<Order> list = orderDAO.findByRoomNum(text);
 				if (list != null && list.size() > 0) {
 					Order order = list.get(0);
-					order.setState(Order.kOrderTypeFinished);
+					order.setState(Order.kOrderStateFinished);
 					orderDAO.attachDirty(order);
 				}
 				

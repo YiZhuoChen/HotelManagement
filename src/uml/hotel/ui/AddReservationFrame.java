@@ -239,7 +239,7 @@ public class AddReservationFrame extends JFrame implements CalendarFrameDelegate
 				
 				//保存预定信息
 				OrderDAO orderDAO = new OrderDAO();
-				Order order = new Order(arriveTime, now, type, Order.kOrderTypeOrdering, roomNum, userName, company, tel, from);
+				Order order = new Order(arriveTime, now, type, Order.kOrderStateOrdering, roomNum, userName, company, tel, from, Order.kOrderDidNotRemind);
 				orderDAO.save(order);
 				
 				

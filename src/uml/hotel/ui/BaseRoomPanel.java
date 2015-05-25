@@ -302,7 +302,7 @@ public abstract class BaseRoomPanel extends JPanel implements Observer, ActionLi
 										RoomStatus targetStatus = new RoomStatus(sourceStatus.getUserId(), 
 												sourceStatus.getStartTime(), sourceStatus.getEndTime(), 
 												target.getNumber(), sourceStatus.getDeposit(), 
-												sourceStatus.getTime(), sourceStatus.getLongStay(), 
+												sourceStatus.getTime(), RoomStatus.kStatusDidNotRemind, 
 												sourceStatus.getType());
 										statusDAO.save(targetStatus);
 										

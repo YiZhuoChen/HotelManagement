@@ -18,10 +18,14 @@ public class Order implements java.io.Serializable {
 	private String company;
 	private String tel;
 	private Integer userFrom;
+	private Integer hasReminded;
 	
-	public static final int kOrderTypeOrdering = 0;
-	public static final int kOrderTypeFinished = 1;
-	public static final int kOrderTypeCanceled = 2;
+	public static final int kOrderDidNotRemind = 0;
+	public static final int kOrderHasReminded = 1;
+	
+	public static final int kOrderStateOrdering = 0;
+	public static final int kOrderStateFinished = 1;
+	public static final int kOrderStateCanceled = 2;
 
 	// Constructors
 
@@ -32,7 +36,7 @@ public class Order implements java.io.Serializable {
 	/** full constructor */
 	public Order(String arriveTime, String orderTime, Integer type,
 			Integer state, String roomNum, String userName, String company,
-			String tel, Integer userFrom) {
+			String tel, Integer userFrom, Integer hasReminded) {
 		this.arriveTime = arriveTime;
 		this.orderTime = orderTime;
 		this.type = type;
@@ -42,6 +46,7 @@ public class Order implements java.io.Serializable {
 		this.company = company;
 		this.tel = tel;
 		this.userFrom = userFrom;
+		this.hasReminded = hasReminded;
 	}
 
 	// Property accessors
@@ -124,6 +129,14 @@ public class Order implements java.io.Serializable {
 
 	public void setUserFrom(Integer userFrom) {
 		this.userFrom = userFrom;
+	}
+
+	public Integer getHasReminded() {
+		return this.hasReminded;
+	}
+
+	public void setHasReminded(Integer hasReminded) {
+		this.hasReminded = hasReminded;
 	}
 
 }

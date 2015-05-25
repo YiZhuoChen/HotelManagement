@@ -8,7 +8,7 @@ import java.util.Date;
  * RoomStatus entity. @author MyEclipse Persistence Tools
  */
 
-public class RoomStatus {
+public class RoomStatus implements java.io.Serializable {
 
 	// Fields
 
@@ -19,8 +19,11 @@ public class RoomStatus {
 	private String roomId;
 	private Integer deposit;
 	private String time;
-	private Integer longStay;
+	private Integer hasReminded;
 	private Integer type;
+	
+	public static final int kStatusDidNotRemind = 0;
+	public static final int kStatusHasReminded = 1;
 
 	// Constructors
 
@@ -30,7 +33,7 @@ public class RoomStatus {
 
 	/** full constructor */
 	public RoomStatus(Integer userId, String startTime, String endTime,
-			String roomId, Integer deposit, String time, Integer longStay,
+			String roomId, Integer deposit, String time, Integer hasReminded,
 			Integer type) {
 		this.userId = userId;
 		this.startTime = startTime;
@@ -38,7 +41,7 @@ public class RoomStatus {
 		this.roomId = roomId;
 		this.deposit = deposit;
 		this.time = time;
-		this.longStay = longStay;
+		this.hasReminded = hasReminded;
 		this.type = type;
 	}
 
@@ -100,12 +103,12 @@ public class RoomStatus {
 		this.time = time;
 	}
 
-	public Integer getLongStay() {
-		return this.longStay;
+	public Integer getHasReminded() {
+		return this.hasReminded;
 	}
 
-	public void setLongStay(Integer longStay) {
-		this.longStay = longStay;
+	public void setHasReminded(Integer hasReminded) {
+		this.hasReminded = hasReminded;
 	}
 
 	public Integer getType() {
@@ -115,7 +118,7 @@ public class RoomStatus {
 	public void setType(Integer type) {
 		this.type = type;
 	}
-	
+
 	public long getLivingDay() {
 		String toString = getEndTime();
 		String beginString = getStartTime();

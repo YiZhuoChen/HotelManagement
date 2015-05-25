@@ -7,39 +7,30 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import java.awt.FlowLayout;
-
 import javax.swing.JButton;
 
 import uml.hotel.notification.NotificationCenter;
+import uml.hotel.utils.RoomStateTipTimer;
 import uml.hotel.utils.Utils;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
 import java.awt.Frame;
 
-import java.awt.Component;
-
 import javax.swing.JPopupMenu;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 
 /**
@@ -105,6 +96,7 @@ public class MainFrame extends JFrame {
 		timeLabel = new JLabel(nowString);
 		panel_1.add(timeLabel);
 		
+		//开启计时器更新时间
 		Timer t = new Timer();
 		t.schedule(new UpdateTimeTimer(), date, 1000);
 		
@@ -146,6 +138,10 @@ public class MainFrame extends JFrame {
 		
 		addBottomButtons(panel_4);
 		
+		
+		//添加计时器，在合适时间提醒房间状态
+		//5分钟更新一次
+		new Timer().schedule(new RoomStateTipTimer(), date, 5 * 60 * 1000);
 	}
 	
 	private void initMenuItems() {
