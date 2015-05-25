@@ -11,7 +11,6 @@ public class Cost {
 	private Integer id;
 	private Integer roomId;
 	private Float cost;
-	private Integer serverItemId;
 	private Integer discount;
 
 	// Constructors
@@ -20,18 +19,11 @@ public class Cost {
 	public Cost() {
 	}
 
-	/** minimal constructor */
+
+	/** full constructor */
 	public Cost(Integer roomId, Float cost, Integer discount) {
 		this.roomId = roomId;
 		this.cost = cost;
-		this.discount = discount;
-	}
-
-	/** full constructor */
-	public Cost(Integer roomId, Float cost, Integer serverItemId, Integer discount) {
-		this.roomId = roomId;
-		this.cost = cost;
-		this.serverItemId = serverItemId;
 		this.discount = discount;
 	}
 
@@ -59,14 +51,6 @@ public class Cost {
 
 	public void setCost(Float cost) {
 		this.cost = cost;
-	}
-
-	public Integer getServerItemId() {
-		return this.serverItemId;
-	}
-
-	public void setServerItemId(Integer serverId) {
-		this.serverItemId = serverId;
 	}
 
 	public Integer getDiscount() {

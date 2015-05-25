@@ -1,5 +1,10 @@
 package uml.hotel.model;
 
+import java.util.List;
+
+import uml.hotel.dao.ServerDAO;
+import uml.hotel.dao.ServerItemDAO;
+
 /**
  * Room entity. @author MyEclipse Persistence Tools
  */
@@ -119,6 +124,26 @@ public class Room {
 	
 	public void setLocation(Integer location) {
 		this.location = location;
+	}
+	
+	/**
+	 * 获取该房间的额外消费总额
+	 * @return
+	 */
+	public float getServiceCost() {
+		float serviceCost = 0;
+		ServerDAO serverDAO = new ServerDAO();
+		List list = serverDAO.findByRoomId(getId());
+		//加上服务费用
+		for (Object object : list) {
+			Server server = (Server)object;
+			int itemID = server.getItemId();
+			ServerItemDAO itemDAO = new ServerItemDAO();
+			ServerItem item = itemDAO.findById(itemID);
+			//单价乘以数量
+			serviceCost += item.getCost() * server.getCount();
+		}
+		return serviceCost;
 	}
 
 }

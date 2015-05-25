@@ -285,6 +285,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//ÓªÒµ²éÑ¯
+				new BillQueryFrame().setVisible(true);
 			}
 		});
 		

@@ -325,19 +325,8 @@ public class PayoffFrame extends JFrame {
 		companyLabel.setText(user.getCompany());
 		//应收金额
 		float roomCost = cost.getCost();
-		float serviceCost = 0;
-			
-		ServerDAO serverDAO = new ServerDAO();
-		List list = serverDAO.findByRoomId(room.getId());
-		//加上服务费用
-		for (Object object : list) {
-			Server server = (Server)object;
-			int itemID = server.getItemId();
-			ServerItemDAO itemDAO = new ServerItemDAO();
-			ServerItem item = itemDAO.findById(itemID);
-			//单价乘以数量
-			serviceCost += item.getCost() * server.getCount();
-		}
+		//获取额外消费总额
+		float serviceCost = room.getServiceCost();
 		
 		float sum = roomCost + serviceCost;
 		shouldPayLabel.setText("" + sum);

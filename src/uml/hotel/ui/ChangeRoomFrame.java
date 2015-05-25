@@ -176,7 +176,7 @@ public class ChangeRoomFrame extends JFrame implements ActionListener {
 			CostDAO costDAO = new CostDAO();
 			List<Cost> costList = costDAO.findByRoomId(source.getId());
 			Cost cost = costList.get(costList.size() - 1);
-			Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getServerItemId(), cost.getDiscount());
+			Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getDiscount());
 			costDAO.save(newCost);
 			
 			//更新房间状态

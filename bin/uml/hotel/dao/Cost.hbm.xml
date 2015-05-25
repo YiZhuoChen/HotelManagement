@@ -20,11 +20,7 @@
                 <comment>房间费用</comment>
             </column>
         </property>
-        <property name="serverItemId" type="java.lang.Integer">
-            <column name="server_item_id">
-                <comment>服务ID，外键</comment>
-            </column>
-        </property>
+        
         <property name="discount" type="java.lang.Integer">
             <column name="discount" not-null="true">
                 <comment>0-不打折 1-打折</comment>

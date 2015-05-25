@@ -1,5 +1,7 @@
 package uml.hotel.model;
 
+import java.util.Vector;
+
 /**
  * Bill entity. @author MyEclipse Persistence Tools
  */
@@ -119,5 +121,4 @@ public class Bill {
 	public void setOther(String other) {
 		this.other = other;
 	}
-
 }

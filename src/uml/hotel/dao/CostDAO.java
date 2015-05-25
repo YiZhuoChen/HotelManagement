@@ -27,7 +27,6 @@ public class CostDAO extends BaseHibernateDAO {
 	// property constants
 	public static final String ROOM_ID = "roomId";
 	public static final String COST = "cost";
-	public static final String SERVER_ITEM_ID = "serverItemId";
 	public static final String DISCOUNT = "discount";
 
 	public void save(Cost transientInstance) {
@@ -104,9 +103,7 @@ public class CostDAO extends BaseHibernateDAO {
 		return findByProperty(COST, cost);
 	}
 
-	public List findByServerId(Object serverItemId) {
-		return findByProperty(SERVER_ITEM_ID, serverItemId);
-	}
+	
 
 	public List findByDiscount(Object discount) {
 		return findByProperty(DISCOUNT, discount);
