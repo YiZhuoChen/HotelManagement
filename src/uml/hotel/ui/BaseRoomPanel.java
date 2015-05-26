@@ -25,11 +25,13 @@ import uml.hotel.dao.CostDAO;
 import uml.hotel.dao.OrderDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
+import uml.hotel.dao.ServerDAO;
 import uml.hotel.dao.UserDAO;
 import uml.hotel.model.Cost;
 import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
+import uml.hotel.model.Server;
 import uml.hotel.model.User;
 import uml.hotel.notification.NotificationCenter;
 import uml.hotel.notification.Observer;
@@ -190,6 +192,7 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 			buttons.get(i).getParent().remove(buttons.get(i));
 		}
 		buttons.removeAllElements();
+		index = 0;
 	}
 	
 	/**
@@ -199,6 +202,7 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 		removeButtons();
 		createButtons();
 		setUpButtons();
+		repaint();
 	}
 	
 	/**
@@ -350,6 +354,16 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 										Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getDiscount());
 										costDAO.save(newCost);
 										
+										//额外消费
+										ServerDAO serverDAO = new ServerDAO();
+										List<Server> servers = serverDAO.findByRoomId(source.getId());
+										for (Server server : servers) {
+											if (server.getFinished() == Server.kServerStateNotFinish) {
+												server.setRoomId(target.getId());
+												serverDAO.attachDirty(server);												
+											}
+										}
+										
 										//更新房间状态
 										roomDAO.attachDirty(source);
 										roomDAO.attachDirty(target);
@@ -367,6 +381,7 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 					
 					if (draggedButton != null && draggedButton.getParent() != null) {
 						draggedButton.getParent().remove(draggedButton);	
+						draggedButton = null;
 					}
 					repaint();
 				}
@@ -417,6 +432,8 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 				}
 			}
 			
+		} else if (name.equals(NotificationCenter.kRoomInfoDidChangeNotification)) {
+			updateButtons();
 		}
 	}
 	
@@ -434,6 +451,8 @@ public class BaseRoomPanel extends JPanel implements Observer, ActionListener {
 				arrive = df.parse(order.getArriveTime());
 				if (arrive.compareTo(new Date()) != -1) {
 					source.setStatus(Room.kRoomStatusReserved);
+				} else {
+					source.setStatus(Room.kRoomStatusAvaliable);
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();

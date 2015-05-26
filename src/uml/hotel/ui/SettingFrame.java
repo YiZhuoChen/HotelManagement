@@ -26,6 +26,8 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -272,7 +274,7 @@ public class SettingFrame extends JFrame implements TreeSelectionListener {
 		JButton deleteServiceBtn = new JButton("É¾³ý");
 		deleteServiceBtn.setBounds(231, 159, 81, 23);
 		panel_1.add(deleteServiceBtn);
-		deleteRoomBtn.addActionListener(new ActionListener() {
+		deleteServiceBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -420,6 +422,28 @@ public class SettingFrame extends JFrame implements TreeSelectionListener {
 			return "ÆäËû";
 		}
 	}
+	
+	private Integer translateRoomLocation(String roomNum) {
+		String roomType = roomNum.substring(0, 2);
+		DecimalFormat df = new DecimalFormat("00");
+		String prefix = roomNum.substring(4);
+		try {
+			Integer num = df.parse(prefix).intValue();
+			if (roomType.equals("BD")) {
+				return 200 + num;
+			} else if (roomType.equals("BS")) {
+				return 300 + num;
+			} else if (roomType.equals("HD")){
+				return 400 + num;
+			} else {
+				return 500 + num;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
@@ -533,7 +557,8 @@ public class SettingFrame extends JFrame implements TreeSelectionListener {
 		RoomDAO roomDAO = new RoomDAO();
 		try {
 			int cost = Integer.parseInt(price);
-			Room room = new Room(Room.kRoomStatusAvaliable, roomNum, roomType, tel, cost, 0);
+			int location = translateRoomLocation(roomNum);
+			Room room = new Room(Room.kRoomStatusAvaliable, roomNum, roomType, tel, cost, 0, location);
 			roomDAO.save(room);
 			
 			resetRoomPanel();

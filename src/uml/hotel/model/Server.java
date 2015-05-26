@@ -12,6 +12,10 @@ public class Server implements java.io.Serializable {
 	private Integer itemId;
 	private Integer count;
 	private Integer roomId;
+	private Integer finished;
+	
+	public static final int kServerStateNotFinish = 0;
+	public static final int kServerStateFinished = 1;
 
 	// Constructors
 
@@ -20,10 +24,11 @@ public class Server implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Server(Integer itemId, Integer count, Integer roomId) {
+	public Server(Integer itemId, Integer count, Integer roomId, Integer finished) {
 		this.itemId = itemId;
 		this.count = count;
 		this.roomId = roomId;
+		this.finished = finished;
 	}
 
 	// Property accessors
@@ -58,6 +63,14 @@ public class Server implements java.io.Serializable {
 
 	public void setRoomId(Integer roomId) {
 		this.roomId = roomId;
+	}
+	
+	public Integer getFinished() {
+		return this.finished;
+	}
+	
+	public void setFinished(Integer finished) {
+		this.finished = finished;
 	}
 
 }

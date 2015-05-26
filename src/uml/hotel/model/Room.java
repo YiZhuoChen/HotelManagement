@@ -51,13 +51,14 @@ public class Room {
 
 	/** full constructor */
 	public Room(Integer status, String number, Integer type, String phoneNum,
-			Integer cost, Integer peopleCount) {
+			Integer cost, Integer peopleCount, Integer location) {
 		this.status = status;
 		this.number = number;
 		this.type = type;
 		this.phoneNum = phoneNum;
 		this.cost = cost;
 		this.peopleCount = peopleCount;
+		this.location = location;
 	}
 
 	// Property accessors

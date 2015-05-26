@@ -315,7 +315,7 @@ public class ConsumeFrame extends JFrame {
 					
 					ServerItem item = (ServerItem)itemDAO.findByContent(content).get(0);
 					
-					Server server = new Server(item.getId(), count, room.getId());
+					Server server = new Server(item.getId(), count, room.getId(), Server.kServerStateNotFinish);
 					serverDAO.save(server);
 				}
 				
@@ -366,6 +366,9 @@ public class ConsumeFrame extends JFrame {
 		List<Server> list = serverDAO.findByRoomId(room.getId());
 		//加上服务费用
 		for (Server server : list) {
+			if (server.getFinished() == Server.kServerStateFinished) {
+				continue;
+			}
 			int count = server.getCount();
 			
 			int itemID = server.getItemId();

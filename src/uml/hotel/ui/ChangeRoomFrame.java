@@ -16,16 +16,23 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 import uml.hotel.dao.CostDAO;
+import uml.hotel.dao.OrderDAO;
 import uml.hotel.dao.RoomDAO;
 import uml.hotel.dao.RoomStatusDAO;
+import uml.hotel.dao.ServerDAO;
 import uml.hotel.model.Cost;
+import uml.hotel.model.Order;
 import uml.hotel.model.Room;
 import uml.hotel.model.RoomStatus;
+import uml.hotel.model.Server;
 import uml.hotel.notification.NotificationCenter;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -159,7 +166,7 @@ public class ChangeRoomFrame extends JFrame implements ActionListener {
 			Room target = (Room)roomDAO.findByNumber((String)comboBox_1.getSelectedItem()).get(0);
 			
 			target.setStatus(source.getStatus());
-			source.setStatus(Room.kRoomStatusAvaliable);
+			setProperRoomStateForRoom(source);
 			
 			//创建新的房间状态信息
 			RoomStatusDAO statusDAO = new RoomStatusDAO();
@@ -179,12 +186,46 @@ public class ChangeRoomFrame extends JFrame implements ActionListener {
 			Cost newCost = new Cost(target.getId(), cost.getCost(), cost.getDiscount());
 			costDAO.save(newCost);
 			
+			//额外消费
+			ServerDAO serverDAO = new ServerDAO();
+			List<Server> servers = serverDAO.findByRoomId(source.getId());
+			for (Server server : servers) {
+				server.setRoomId(target.getId());
+				serverDAO.attachDirty(server);
+			}
+			
 			//更新房间状态
 			roomDAO.attachDirty(source);
 			roomDAO.attachDirty(target);
 			//发送通知：房间状态改变
 			NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, source.getNumber());
 			NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, target.getNumber());
+		}
+	}
+	
+	
+	public void setProperRoomStateForRoom(Room source) {
+		RoomStatusDAO statusDAO = new RoomStatusDAO();
+		List<RoomStatus> list = statusDAO.findByRoomId(source.getNumber());
+		
+		OrderDAO orderDAO = new OrderDAO();
+		List<Order> orders = orderDAO.findByRoomNum(source.getNumber());
+		if (orders != null && orders.size() > 0) {
+			Order order = orders.get(orders.size() - 1);
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date arrive;
+			try {
+				arrive = df.parse(order.getArriveTime());
+				if (arrive.compareTo(new Date()) != -1) {
+					source.setStatus(Room.kRoomStatusReserved);
+				} else {
+					source.setStatus(Room.kRoomStatusAvaliable);
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			source.setStatus(Room.kRoomStatusAvaliable);
 		}
 	}
 }

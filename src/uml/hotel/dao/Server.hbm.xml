@@ -25,5 +25,10 @@
                 <comment>对应的房间id</comment>
             </column>
         </property>
+        <property name="finished" type="java.lang.Integer">
+            <column name="finished" not-null="true">
+                <comment>是否完成，0否1是</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

@@ -28,6 +28,7 @@ public class ServerDAO extends BaseHibernateDAO {
 	public static final String ITEM_ID = "itemId";
 	public static final String COUNT = "count";
 	public static final String ROOM_ID = "roomId";
+	public static final String FINISHED = "finished";
 
 	public void save(Server transientInstance) {
 		log.debug("saving Server instance");
@@ -112,6 +113,10 @@ public class ServerDAO extends BaseHibernateDAO {
 		return findByProperty(ROOM_ID, roomId);
 	}
 
+	public List findByFinished(Object finished) {
+		return findByProperty(FINISHED, finished);
+	}
+	
 	public List findAll() {
 		log.debug("finding all Server instances");
 		try {

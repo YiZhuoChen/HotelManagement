@@ -22,6 +22,8 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -103,7 +105,7 @@ public class LoginFrame extends JFrame {
 		lblV.setBounds(370, 33, 54, 15);
 		contentPane.add(lblV);
 		
-		JButton button = new JButton("\u767B\u9646");
+		final JButton button = new JButton("\u767B\u9646");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String user = txtAdmin.getText();
@@ -128,6 +130,16 @@ public class LoginFrame extends JFrame {
 		button.setBounds(65, 437, 93, 23);
 		contentPane.add(button);
 		
+		passwordField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				System.out.println("press");
+				if (e.getKeyCode() == 10) {
+					button.doClick();
+				}
+			}
+		});
+		
 		JButton button_1 = new JButton("\u53D6\u6D88");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -138,7 +150,7 @@ public class LoginFrame extends JFrame {
 		button_1.setBounds(267, 437, 93, 23);
 		contentPane.add(button_1);
 		
-		JLabel lbladmin = new JLabel("\u8D85\u7EA7\u7528\u6237\u540D\u7684\u8D26\u53F7\u662Fadmin\uFF0C\u5BC6\u7801\u4E3Aadmin\u3002");
+		JLabel lbladmin = new JLabel("\u7528\u6237\u7684\u8D26\u53F7\u662Fadmin\uFF0C\u5BC6\u7801\u4E3Aadmin\u3002");
 		lbladmin.setHorizontalAlignment(SwingConstants.CENTER);
 		lbladmin.setFont(new Font("ËÎÌו", Font.PLAIN, 11));
 		lbladmin.setForeground(Color.red);

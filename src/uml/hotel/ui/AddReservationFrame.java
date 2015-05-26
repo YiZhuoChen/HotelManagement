@@ -242,14 +242,15 @@ public class AddReservationFrame extends JFrame implements CalendarFrameDelegate
 				Order order = new Order(arriveTime, now, type, Order.kOrderStateOrdering, roomNum, userName, company, tel, from, Order.kOrderDidNotRemind);
 				orderDAO.save(order);
 				
-				
-				roomDAO.attachDirty(selectedRoom);
+
 				if (shouldChangeState) {
 					//修改房间状态
 					selectedRoom.setStatus(Room.kRoomStatusReserved);
+					roomDAO.attachDirty(selectedRoom);
 					//发送通知：房间状态改变
 					NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, roomNum);
 				}
+
 				//发送通知，预定状态改变
 				NotificationCenter.postNotification(NotificationCenter.kReservationStateDidChangeNotification, null);
 				

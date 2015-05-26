@@ -259,6 +259,16 @@ public class PayoffFrame extends JFrame {
 					room.setStatus(Room.kRoomStatusClean);
 					roomDAO.attachDirty(room);
 					
+					//额外消费
+					ServerDAO serverDAO = new ServerDAO();
+					List<Server> servers = serverDAO.findByRoomId(room.getId());
+					for (Server server : servers) {
+						if (server.getFinished() == Server.kServerStateNotFinish) {
+							server.setFinished(Server.kServerStateFinished);
+							serverDAO.attachDirty(server);
+						}
+					}
+					
 					NotificationCenter.postNotification(NotificationCenter.kRoomStatusDidChangeNotification, room.getNumber());
 					
 					setVisible(false);
@@ -340,9 +350,10 @@ public class PayoffFrame extends JFrame {
 		if (isVIP) {
 			preferential = sum * 0.01f;
 		}
-		preferentiaLabel.setText("" + preferential);
+		int preferential_i = (int)preferential;
+		preferentiaLabel.setText("" + preferential_i);
 		//还需支付
-		float rest = sum - preferential - status.getDeposit();
+		float rest = sum - preferential_i - status.getDeposit();
 		restCostLabel.setText("" + rest);
 	}
 }
