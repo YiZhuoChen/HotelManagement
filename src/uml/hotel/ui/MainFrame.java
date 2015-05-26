@@ -271,6 +271,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//增加消费
+				new ChooseRoomFrame(ChooseRoomFrame.kChooseRoomTypeConsume).setVisible(true);
 			}
 		});
 		

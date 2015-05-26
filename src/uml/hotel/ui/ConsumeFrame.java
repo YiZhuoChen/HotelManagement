@@ -391,6 +391,7 @@ public class ConsumeFrame extends JFrame {
 	
 	
 	public void updateLeftTableModel() {
+		leftTableData = new Vector<Vector<Object>>();
 		ServerItemDAO itemDAO = new ServerItemDAO();
 		List<ServerItem> items = itemDAO.findAll();
 		for (ServerItem serverItem : items) {
